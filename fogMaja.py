@@ -106,7 +106,6 @@ def analyse(i, sentences):
     tokenized_words = []
     for sent in sentences:
         words = word_tokenizing(sent)
-        print("!!!tokens:", words)
         tokenized_words.extend(words)
     print("//The number of tokenized words in this text is", len(tokenized_words))
 

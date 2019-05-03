@@ -14,19 +14,21 @@ def process(input_filename, output_filename):
     for line in text_in:
         # if the bibliography starts, we ignore the rest of the document
         if bool(re.search(r"^bibliography:?\s*$", line.lower())) or \
+            bool(re.search(r"^appendix ([\sa-z0-9:])+$", line.lower())) or \
+            bool(re.search(r"^7 -  undertaking of the research team", line.lower())) or \
             bool(re.search(r"^references:?\s*$", line.lower())):
             break
 
-        # if a line starts with a comment or formatting from a reader or contains meta-information about the document, ignore that line
-        if not (bool(re.search(r"^kommentiert", line.lower())) or \
-                bool(re.search(r"^formatiert", line.lower())) or \
-                bool(re.search(r"^formatted", line.lower())) or \
-                bool(re.search(r"^commented", line.lower()))  or \
-                bool(re.search(r"^words? count", line.lower()))  or \
+        # if a line consists of less than 2 words, contains meta-information about the document or is a heading or page break, ignore that line
+        if not (len(re.findall(r" ", line)) < 1 or \
                 bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or \
+                bool(re.search(r"^\d\.(\d\.?)* \w+( [\w-]+)* \d+ ?$", line.lower())) or \
                 bool(re.search(r"^date of submission", line.lower())) or \
                 bool(re.search(r"^signature:?", line.lower())) or \
-                bool(re.search(r"^\d+ words\s*$", line.lower())) or \
+                bool(re.search(r"definiert", line.lower())) or \
+                bool(re.search(r"^\d(\.\d\.?)+ \w+", line.lower())) or \
+                bool(re.search(r" \.{2,}", line.lower())) or \
+                bool(re.search(r"P a g e", line)) or \
                 bool(re.search(r"^==.+==$", line.lower())) ):
             content += line
 
@@ -46,15 +48,20 @@ def process(input_filename, output_filename):
         sentence = re.sub(r'\(.*[‘’“”\'\"].+[‘’“”\'\"].*\)', " ", sentence)
         # delete page numbers
         sentence = re.sub(r" \d+  ", " ", sentence)
+        # delete unknown symbols which lead into a sentence
+        sentence = re.sub(r"^\W \w+", sentence[1:], sentence)
 
         # split the sentence into words
         words = sentence.split(" ")
-        # delete urls
-        words = [w for w in words if bool(re.search(r"^http.+", w)) is False]
+        # delete urls and words that consist of at least 4 dots
+        words = [w for w in words if (bool(re.search(r"^http.+", w)) is False) and \
+                 (bool(re.search(r"(\.{4,})|…{2,}", w)) is False)]
         # delete strange symbols like arrows at the beginning of a word
         words_without_symbols = []
         for w in words:
-            if bool(re.search(r"^\W\w+", w)) is True:
+            if bool(re.search(r"^(\.\.\.?)|…$", w)) is True:
+                words_without_symbols.append(".")
+            elif bool(re.search(r"^[^(‘’“”\'\"\w]\w*", w)) is True:
                 words_without_symbols.append(w[1:])
             else:
                 words_without_symbols.append(w)
@@ -73,7 +80,7 @@ def process(input_filename, output_filename):
         # filter out sentences that are shorter than three words
         if (len(s) >= 3):
             for w in s:
-                # filter out sentences that contain only whitespaces
+                # filter out words that contain only whitespaces
                 if len(w)>0:
                     text_out.write(w)
                     # separate words with white spaces
@@ -86,11 +93,6 @@ def process(input_filename, output_filename):
 
 
 # executes for all files in one directory
-for f in os.listdir("Data/homework/essays"):
-    process("Data/homework/essays/" + f, "PreprocessedData/homework/essays/" + f + ".txt")
-for f in os.listdir("Data/homework/aff-case"):
-    process("Data/homework/aff-case/" + f, "PreprocessedData/homework/aff-case/" + f + ".txt")
-for f in os.listdir("Data/homework/osmosis"):
-    process("Data/homework/osmosis/" + f, "PreprocessedData/homework/osmosis/" + f + ".txt")
-for f in os.listdir("Data/homework/mission-command"):
-    process("Data/homework/mission-command/" + f, "PreprocessedData/homework/mission-command/" + f + ".txt")
+for f in os.listdir("Data/thesis"):
+    if f.startswith("en"):
+        process("Data/thesis/" + f, "PreprocessedData/thesis/" + f + ".txt")
