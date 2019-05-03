@@ -12,7 +12,7 @@
 # the slight difference in results from online calculators is probably due to the count of complex words # working on this issue
 
 
-# how to run: python fogMaja.py nameOfDataFile.py nameOfTokenizer(either nltk or spacy) numberOfSyllablesToCountAWordAsComplex
+# how to run: python fogMaja.py nameOfDataFile.py nameOfTokenizer(either nltk or spacy) numberOfSyllablesToCountAWordAsComplex numberOfSentencesForPartitioning
 
 # !/usr/bin/python3
 import warnings
@@ -20,7 +20,7 @@ import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-#import nltk
+import nltk
 #nltk.download('punkt') #only DL if don't already have
 #nltk.download('popular')
 
@@ -76,23 +76,27 @@ def count_syllables(word):
 
 # get complex words out of all words
 def get_complex_words(words):
-    # difficult words are those with syllables >= 2
+    # difficult words are those with syllables >= x
     # easy_word_set is provided by Textstat as
     # a list of common words
     diff_words_set = []
 
     for word in words:
         syllable_count = count_syllables(word)
-
-        # word not in easy set and longer than 3 syllables
+        # word not in easy set and longer than x syllables
+        difficult = False
         if word not in easy_word_set \
                 and syllable_count >= complexity:
-            # word not a verb with 3 syllables that ends in -ed or -es (would usually have only 2 syllables)
-            # if word.endswith("ed") == False or word.endswith("es") == False \
-            # and syllable_count > 3 \
-            # and nltk.tag.pos_tag([word])[0][1].startswith("V"):
+            # word not a verb with 3 syllables that ends in -ed, -ing or -es (would usually have only 2 syllables)
+            if (word.endswith("ed") == True or word.endswith("es") == True or word.endswith("ing") == True) \
+            and syllable_count == 3 and nltk.tag.pos_tag([word])[0][1].startswith("V"):
+                difficult = False
             # no proper nouns
-            # if nltk.tag.pos_tag([word])[0][1] is not "NNP":
+            elif nltk.tag.pos_tag([word])[0][1] is "NNP":
+                difficult = False
+            else:
+                difficult = True
+        if difficult:
             diff_words_set.append(word)
     print("//Wow! The number of complex words this text contains is: ", len(diff_words_set))
     return diff_words_set
@@ -102,6 +106,7 @@ def analyse(i, sentences):
     tokenized_words = []
     for sent in sentences:
         words = word_tokenizing(sent)
+        print("!!!tokens:", words)
         tokenized_words.extend(words)
     print("//The number of tokenized words in this text is", len(tokenized_words))
 
