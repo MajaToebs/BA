@@ -77,7 +77,7 @@ def count_syllables(word):
 
 # get complex words out of all words
 def get_complex_words(words, complexity):
-    # difficult words are those with syllables >= x
+    # difficult words are those with syllables >= complexity and a few other restrictions (see below)
     # easy_word_set is provided by Textstat as
     # a list of common words
     diff_words_set = []
@@ -99,7 +99,7 @@ def get_complex_words(words, complexity):
                 difficult = True
         if difficult:
             diff_words_set.append(word)
-    print("//Wow! The number of complex words this text contains is: ", len(diff_words_set))
+    #print("//Wow! The number of complex words this text contains is: ", len(diff_words_set))
     return diff_words_set
 
 
@@ -108,28 +108,28 @@ def analyse(i, sentences, tokenizer, complexity):
     for sent in sentences:
         words = word_tokenizing(sent, tokenizer)
         tokenized_words.extend(words)
-    print("//The number of tokenized words in this text is", len(tokenized_words))
+    #print("//The number of tokenized words in this text is", len(tokenized_words))
 
     # Determine average sentence length
     average_sentence_length = len(tokenized_words) / len(sentences)
-    print("//Chunk", i, "contains an average of ", round(average_sentence_length, 2), " words per sentence")
+    #print("//Chunk", i, "contains an average of ", round(average_sentence_length, 2), " words per sentence")
 
     diff_words_set = get_complex_words(tokenized_words, complexity)
 
     # print the percentage of complex words
     diff_word_freq = len(diff_words_set) / len(tokenized_words) * 100
-    print("//The frequency of big words in chunk", i, "is", round(diff_word_freq, 2), "%")
+    #print("//The frequency of big words in chunk", i, "is", round(diff_word_freq, 2), "%")
 
     # calculate the fog index
     fog = (diff_word_freq + average_sentence_length) * 0.4
 
-    print("//The Gunning Fog Index in chunk", i, "is: ", round(fog, 2), "\n")
-    return fog
+    #print("//The Gunning Fog Index in chunk", i, "is: ", round(fog, 2), "\n")
+    return round(fog, 4)
 
 
-def process (f_in, f_out, c):
+def process (f, c):
     tokenizer = "nltk"
-    filename = f
+    filename = "PreprocessedData/thesis/" + f
     complexity = 3
     sentences_per_chunk = c
 
@@ -137,42 +137,74 @@ def process (f_in, f_out, c):
     with open(filename, "r", encoding="utf-8-sig") as raw:
         text_in = raw.read().replace("\n", " ")
         raw.close()
-    print("//File:", filename)
-    # TODO: set the name of the document and the number of sentences per chunk in the dataframe
 
     # tokenize the text into sentences with nltk and then print how many there are
     sentences = sent_tokenize(text_in)
-    print("//The number of sentences this text contains is: ", str(len(sentences)), "\n")
-    # TODO: calculate the number of chunks this document will yield(?)
+    #print("//The number of sentences this text contains is: ", str(len(sentences)), "\n")
 
     # store all fog indices of the different chunks
     fog_indices = []
 
-    # the user wants to analyse the whole text
-    if sentences_per_chunk == 0:
+    # analyse the whole text as one chunk, if 0 is given as sentences_per_chunk or sentences_per_chunk is bigger than the document
+    if sentences_per_chunk == 0 or sentences_per_chunk > len(sentences):
+        sentences_per_chunk = len(sentences)
         fog_indices.append(analyse(0, sentences, tokenizer, complexity))
+    # the user wants to analyse chunks of a given length
     else:
         n = len(sentences)/sentences_per_chunk
         for i in range(1, int(n+1)):
             chunk_i = sentences[(i-1)*sentences_per_chunk:i*sentences_per_chunk]
             fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
 
-    # final print
-    print("//The average Gunning Fog Index in this document is", round(sum(fog_indices)/len(fog_indices),2))
-    print("//The analysis is finished.")
+    # add this document's calculated GFIs
+    for j in range(len(fog_indices)):
+        data['document'].append(f)
+        data['length_of_chunk'].append(sentences_per_chunk)
+        data['number_of_chunk'].append(j+1)
+        data['x'].append(fog_indices[j])
 
-    data_out = open(f_out, "w")
-    # TODO: data_out.write(data)
-    data_out.close()
+    #print("//The average Gunning Fog Index in this document is", round(sum(fog_indices)/len(fog_indices),2))
 
 
 
 
 
 import os
+import pandas as pd
 
+# get the theses we want to analyze
+theses_to_analyze = []
 # executes for all files in one directory
 for f in os.listdir("PreprocessedData/thesis"):
     if f.startswith("en"):
-        process("PreprocessedData/thesis/" + f, "outputTheses.csv", 0)
+        theses_to_analyze.append(f)
+
+number_of_theses = len(theses_to_analyze)
+print("Analyse", number_of_theses, "theses.............")
+
+data = { 'document' : [],
+    'length_of_chunk' : [],
+    'number_of_chunk' : [],
+    'x' : []}
+
+# analyse each thesis
+for k, thesis in enumerate(theses_to_analyze):
+    print("Analysing thesis", k+1, "of", len(theses_to_analyze))
+    # insert the number of sentences per chunk here!!!
+    for m in [0, 1000, 500, 400, 300, 200, 100, 50, 40, 30, 20, 10]:
+        process(thesis, m)
+
+print("The analysis is finished. \nStoring data.............")
+
+# convert the dictionary with the data to a dataframe
+df = pd.DataFrame(data=data)
+
+# write the collected data into a csv-file
+data_out = open("dataTheses.csv", "w")
+# convert the data to a csv and write it into the given file
+data_out.write(df.to_csv())
+data_out.close()
+
+print("The collected data has been written to 'dataTheses.csv'. \nGo, have a look!")
+
 sys.exit()
