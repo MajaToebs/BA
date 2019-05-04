@@ -30,8 +30,8 @@ tokenized_words = withoutNumbers
 print(tokenized_words)
 '''
 
-text2 = "Erster Satz. Und es folgt ein zweiter Satz. Und ein dritter." \
-        "Und auch noch ein vierter! Und Nummer 5, plumbum."
+text2 = "Erster Satz. Und es folgt ein zweiter Satz. Und ein dritter. \
+        Und auch noch ein vierter! Und Nummer 5, plumbum: Ist das Nummer 6?"
 from nltk.tokenize import sent_tokenize
 print(sent_tokenize(text2))
 
