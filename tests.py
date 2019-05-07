@@ -42,3 +42,9 @@ list1 = ['bla', 'bli']
 list2 = ['blub']
 list1.extend(list2)
 print(list1)
+
+import os
+names_of_theses = []
+for i in os.listdir('PreprocessedData/thesis/'):
+    names_of_theses.append(i)
+print(names_of_theses)

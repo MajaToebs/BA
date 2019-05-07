@@ -12,8 +12,6 @@
 # the slight difference in results from online calculators is probably due to the count of complex words # working on this issue
 
 
-# how to run: python fogMaja.py nameOfDataFile.py nameOfTokenizer(either nltk or spacy) numberOfSyllablesToCountAWordAsComplex numberOfSentencesForPartitioning
-
 # !/usr/bin/python3
 import warnings
 
@@ -161,7 +159,7 @@ def process (f, c):
         data['document'].append(f)
         data['length_of_chunk'].append(sentences_per_chunk)
         data['number_of_chunk'].append(j+1)
-        data['x'].append(fog_indices[j])
+        data['GFI'].append(fog_indices[j])
 
     #print("//The average Gunning Fog Index in this document is", round(sum(fog_indices)/len(fog_indices),2))
 
@@ -185,7 +183,7 @@ print("Analyse", number_of_theses, "theses.............")
 data = { 'document' : [],
     'length_of_chunk' : [],
     'number_of_chunk' : [],
-    'x' : []}
+    'GFI' : []}
 
 # analyse each thesis
 for k, thesis in enumerate(theses_to_analyze):
@@ -200,11 +198,11 @@ print("The analysis is finished. \nStoring data.............")
 df = pd.DataFrame(data=data)
 
 # write the collected data into a csv-file
-data_out = open("dataTheses.csv", "w")
+data_out = open("resultsTheses.csv", "w")
 # convert the data to a csv and write it into the given file
 data_out.write(df.to_csv())
 data_out.close()
 
-print("The collected data has been written to 'dataTheses.csv'. \nGo, have a look!")
+print("The collected data has been written to 'resultsTheses.csv'. \nGo, have a look!")
 
 sys.exit()
