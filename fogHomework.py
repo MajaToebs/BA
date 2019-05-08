@@ -15,14 +15,14 @@
 # !/usr/bin/python3
 import warnings
 
-import numpy as np
-
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 import nltk
 #nltk.download('punkt') #only DL if don't already have
 #nltk.download('popular')
+
+import numpy as np
 
 # import the tokenizer from nltk
 from nltk.tokenize import sent_tokenize
@@ -123,7 +123,7 @@ def analyse(i, sentences, tokenizer, complexity):
 
 def process (f, c):
     tokenizer = "nltk"
-    filename = "PreprocessedData/thesis/" + f
+    filename = "PreprocessedData/homework/" + f
     complexity = 3
     sentences_per_chunk = c
 
@@ -148,7 +148,7 @@ def process (f, c):
         for i in range(1, int(n+1)):
             chunk_i = sentences[(i-1)*sentences_per_chunk:i*sentences_per_chunk]
             fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
-            # calculate the variances of GFIs of this document for this chunk size
+        # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
         variances['variance'].append(np.var(fog_indices))
 
@@ -167,50 +167,64 @@ import pandas as pd
 
 # get the theses we want to analyze
 theses_to_analyze = []
+# executes for all files in directories
+
 # executes for all files in one directory
-for f in os.listdir("PreprocessedData/thesis"):
-    if f.startswith("en"):
-        theses_to_analyze.append(f)
+essays = []
+for f in os.listdir("PreprocessedData/homework/essays"):
+    essays.append("essays/" + f)
+aff_case = []
+for f in os.listdir("PreprocessedData/homework/aff-case"):
+    aff_case.append("aff-case/" + f)
+osmosis = []
+for f in os.listdir("PreprocessedData/homework/osmosis"):
+    osmosis.append("osmosis/" + f)
+mission_command = []
+for f in os.listdir("PreprocessedData/homework/mission-command"):
+    mission_command.append("mission-command/" + f)
 
-number_of_theses = len(theses_to_analyze)
-print("Analyse", number_of_theses, "theses.............")
+theses_to_analyze = [essays, aff_case, osmosis, mission_command]
 
-data = { 'document' : [],
-    'length_of_chunk' : [],
-    'number_of_chunk' : [],
-    'GFI' : []}
+for i in range(len(theses_to_analyze)):
+    print("Analyse folder " + str(i+1) + " out of " + str(len(theses_to_analyze)))
+    number_of_homeworks = len(theses_to_analyze[i])
+    print("Analyse", number_of_homeworks, "theses.............")
 
-variances = { 'length_of_chunk' : [],
-                'variance' : [] }
+    data = { 'document' : [],
+        'length_of_chunk' : [],
+        'number_of_chunk' : [],
+        'GFI' : []}
 
+    variances = {'length_of_chunk': [],
+                 'variance': []}
 
-# analyse each thesis
-for k, thesis in enumerate(theses_to_analyze):
-    print("Analysing thesis", k+1, "of", len(theses_to_analyze))
-    # insert the number of sentences per chunk here!!!
-    for m in [0, 1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 75, 50, 40, 30, 20, 10]:
-        process(thesis, m)
+    # analyse each homework
+    for k, homework in enumerate(theses_to_analyze[i]):
+        print("Analysing homework", k+1, "of", len(theses_to_analyze[i]))
+        for m in [0, 200, 150, 100, 90, 80, 70, 60, 50, 45, 40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]:
+            process(homework, m)
 
-print("The analysis is finished. \nStoring data.............")
+    print("The analysis of this folder is finished. \nStoring data.............")
 
-# convert the dictionary with the data to a dataframe
-df = pd.DataFrame(data=data)
-# drop duplicate rows
-df = df.drop_duplicates(keep='first')
+    # convert the dictionary with the data to a dataframe
+    df = pd.DataFrame(data=data)
+    # remove duplicate rows (they exist due to m going down from a high number to a low number)
+    df = df.drop_duplicates(keep='first')
 
-# write the collected data into a csv-file
-data_out = open("resultsTheses.csv", "w")
-# convert the data to a csv and write it into the given file
-data_out.write(df.to_csv())
-data_out.close()
+    # write the collected data into csv-files
+    data_out = open("results_" + str(i) + ".csv", "w")
+    # convert the data to a csv and write it into the given file
+    data_out.write(df.to_csv())
+    data_out.close()
 
-# store variances
-data_out = open("variancesTheses.csv", "w")
-df_var = pd.DataFrame(variances)
-data_out.write(df_var.to_csv())
-data_out.close()
+    # store variances
+    data_out = open("variancesHomework_" + str(i) + ".csv", "w")
+    df_var = pd.DataFrame(variances)
+    data_out.write(df_var.to_csv())
+    data_out.close()
 
+    print("The collected data has been written to 'results_i.csv' and 'variancesHomework_i.csv'. \nGo, have a look!")
 
-print("The collected data has been written to 'resultsTheses.csv' and 'variancesTheses.csv'. \nGo, have a look!")
+print("Completely finished.")
 
 sys.exit()

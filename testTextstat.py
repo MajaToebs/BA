@@ -8,6 +8,7 @@ filename = sys.argv[1]
 with open(filename, "r", encoding="utf-8-sig") as raw:
     text = raw.read().replace("\n", " ")
 
+
 print('FOG:', textstat.gunning_fog(text))
 print('flesch_reading_ease:', textstat.flesch_reading_ease(text))
 print('smog_index:', textstat.smog_index(text))
