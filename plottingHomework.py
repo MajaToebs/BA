@@ -108,10 +108,10 @@ plt.close('all')
 # read in the variances from the file
 df_var_0 = pd.read_csv("variancesHomework_0.csv", header=0, index_col=0)
 df_var_1 = pd.read_csv("variancesHomework_1.csv", header=0, index_col=0)
-df_var_2 = pd.read_csv("variancesHomework_2.csv", header=0, index_col=0)
+#df_var_2 = pd.read_csv("variancesHomework_2.csv", header=0, index_col=0) OSMOSIS
 df_var_3 = pd.read_csv("variancesHomework_3.csv", header=0, index_col=0)
 
-df_variances = pd.concat([df_var_0, df_var_1, df_var_2, df_var_3], ignore_index=True)
+df_variances = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
 
 # get the chunk sizes and their mean variances
 chunk_sizes = list(set(df_variances['length_of_chunk']))
