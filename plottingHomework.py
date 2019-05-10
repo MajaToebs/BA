@@ -16,7 +16,7 @@ df = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
 for m in [40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]: # setting m to a high number doesn't make sense for boxplots
     my_doc_chunk_m = df.loc[df['length_of_chunk'] == m]
     my_doc_chunk_m.boxplot(column='GFI', by='document', figsize=(14,7))
-    plt.title = "length" + str(m)
+    plt.ylabel('GFI')
     plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
     plt.savefig('Plots/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
 
@@ -52,23 +52,21 @@ all_homeworks = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/95341
                  'mission-command/9490214.txt', 'mission-command/9489842.txt']
 
 
-# TODO EMPTY FIGURES!! and too many?
-
 
 # BAR CHART
 for homework in all_homeworks:
     for m in [20, 18, 16, 14, 12, 10]: # doesn't make sense with bigger m, since there is only one bar then
         plt.close('all')
         this_doc_len_m_ = df.loc[df['document'] == homework]
-        if this_doc_len_m_.empty == True:
-            continue
         this_doc_len_m = this_doc_len_m_.loc[df['length_of_chunk'] == m]
         if this_doc_len_m.empty == True:
             continue
         ints = []
         for i in this_doc_len_m['number_of_chunk']:
             ints.append(int(i))
-        #plt.bar(ints,this_doc_len_m['GFI'])
+        if len(ints) < 6:
+            continue
+        plt.bar(ints,this_doc_len_m['GFI'])
         plt.gcf().set_size_inches(7, 3.5)
         plt.ylabel('GFI')
         plt.xlabel('number of chunk (from beginning to end)')
@@ -90,22 +88,19 @@ for homework in all_homeworks:
     plt.gcf().set_size_inches(14, 7)
 
     # calculate the mean GFIs for each chunk size
-    mean_GFIs = []
-    for l in set(this_doc['length_of_chunk']):
+    mean_GFIs = {'len': [],
+                 'mean': []}
+    for l in sorted(set(this_doc['length_of_chunk'])):
         values = this_doc.loc[this_doc['length_of_chunk'] == l]['GFI']
-        mean_GFIs.append(np.mean(values))
+        mean_GFIs['len'].append(l)
+        mean_GFIs['mean'].append(np.mean(values))
 
-    # set the x-values needed to show the means
-    x_min = np.min(this_doc['length_of_chunk'])
-    x_max = np.max(this_doc['length_of_chunk'])
-    x_s = np.linspace(x_min, x_max, len(mean_GFIs))
 
     # insert the means into the plot
-    plt.plot(x_s, mean_GFIs, 'k-', color='r')
-
+    plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', color='r')
     plt.ylabel('GFI')
     plt.xlabel('length of chunk in sentences')
-    plt.savefig('Plots/homework/scatter/' + homework[-6:] + 'indicesOverChunkSize.svg')
+    plt.savefig('Plots/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
 
 plt.close('all')
 # VARIANCES
@@ -130,4 +125,6 @@ for size in chunk_sizes:
 # scatter them nicely
 plt.scatter(chunk_sizes, mean_chunk_variances)
 plt.gcf().set_size_inches(14, 7)
+plt.ylabel('mean variance of the GFI over all documents')
+plt.xlabel('length of chunk in sentences')
 plt.savefig('Plots/homework/variances.svg')
