@@ -12,23 +12,22 @@ def process(input_filename, output_filename):
 
     content = ""
     for line in text_in:
-        # if the bibliography starts, we ignore the rest of the document
+        # if the bibliography starts, we ignore the rest of the document by breaking the loop
         if bool(re.search(r"^bibliography:?\s*$", line.lower())) or \
             bool(re.search(r"^appendix ([\sa-z0-9:])+$", line.lower())) or \
             bool(re.search(r"^7 -  undertaking of the research team", line.lower())) or \
             bool(re.search(r"^references:?\s*$", line.lower())):
             break
 
-        # if a line consists of less than 2 words, contains meta-information about the document or is a heading or page break, ignore that line
-        if not (len(re.findall(r" ", line)) < 1 or \
-                bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or \
-                bool(re.search(r"^\d\.(\d\.?)* \w+( [\w-]+)* \d+ ?$", line.lower())) or \
-                bool(re.search(r"^date of submission", line.lower())) or \
-                bool(re.search(r"^signature:?", line.lower())) or \
-                bool(re.search(r"definiert", line.lower())) or \
-                bool(re.search(r"^\d(\.\d\.?)+ \w+", line.lower())) or \
-                bool(re.search(r" \.{2,}", line.lower())) or \
-                bool(re.search(r"P a g e", line)) or \
+        # if a line contains meta-information about the document or is a heading or page break, ignore that line
+        if not (bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
+                bool(re.search(r"^\d\.(\d\.?)* \w+( [\w-]+)* \d+ ?$", line.lower())) or
+                bool(re.search(r"^date of submission", line.lower())) or
+                bool(re.search(r"^signature:?", line.lower())) or
+                bool(re.search(r"definiert", line.lower())) or
+                bool(re.search(r"^\d(\.\d\.?)+ \w+", line.lower())) or
+                bool(re.search(r" \.{2,}", line.lower())) or
+                bool(re.search(r"P a g e", line)) or
                 bool(re.search(r"^==.+==$", line.lower())) ):
             content += line
 
@@ -49,7 +48,7 @@ def process(input_filename, output_filename):
         # delete page numbers
         sentence = re.sub(r" \d+  ", " ", sentence)
         # delete unknown symbols which lead into a sentence
-        sentence = re.sub(r"^\W \w+", sentence[1:], sentence)
+        sentence = re.sub(r"^\W( \w+)+", sentence[1:], sentence)
 
         # split the sentence into words
         words = sentence.split(" ")
@@ -67,8 +66,6 @@ def process(input_filename, output_filename):
                 words_without_symbols.append(w)
         words = words_without_symbols
 
-        #words = [w for w in words if bool(re.search(r"(^\W+$|([a-zA-Z]*\d+[a-zA-Z]*)+)", w)) is False]
-
         # store the shortened sentences
         sentences[index] = words
 
@@ -77,22 +74,31 @@ def process(input_filename, output_filename):
 
     # iterate over sentences to filter out the ones which are too short to be real sentences
     for i, s in enumerate(sentences):
-        # filter out sentences that are shorter than three words
-        if (len(s) >= 3):
-            for w in s:
-                # filter out words that contain only whitespaces
-                if len(w)>0:
-                    text_out.write(w)
-                    # separate words with white spaces
+        # filter out words that contain only whitespaces
+        s = [w for w in s if len(w) > 0]
+        # filter out sentences that consist only out of one word
+        if (len(s) > 1):
+            for j, w in enumerate(s):
+                if bool(re.search(r"\w+\.\.", w)):
+                    w = w[:-1]
+                text_out.write(w)
+                # separate words with white spaces
+                if j != len(s)-1:
                     text_out.write(" ")
-            # separate sentences with line breaks
-            text_out.write('\n')
+                # for the last word of a sentence
+                else:
+                    # separate sentences with line breaks and a period, if there is no other symbol to mark the end of sentence
+                    if bool(re.search(r"\.$", w)) is True:
+                        text_out.write('\n')
+                    else:
+                        text_out.write('.\n')
 
     text_out.close()
 
 
 
-# executes for all files in one directory
+# execute the preprocessing for all files in one directory
 for f in os.listdir("Data/thesis"):
+    # use only the English documents
     if f.startswith("en"):
         process("Data/thesis/" + f, "PreprocessedData/thesis/" + f + ".txt")
