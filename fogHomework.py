@@ -188,7 +188,7 @@ theses_to_analyze = [essays, aff_case, osmosis, mission_command]
 for i in range(len(theses_to_analyze)):
     print("Analyse folder " + str(i+1) + " out of " + str(len(theses_to_analyze)))
     number_of_homeworks = len(theses_to_analyze[i])
-    print("Analyse", number_of_homeworks, "theses.............")
+    print("Analyse", number_of_homeworks, "homeworks.............")
 
     data = { 'document' : [],
         'length_of_chunk' : [],
