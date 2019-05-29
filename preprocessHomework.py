@@ -30,6 +30,7 @@ def process(input_filename, output_filename):
         bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
         bool(re.search(r"^date of submission", line.lower())) or
         bool(re.search(r"^signature:?", line.lower())) or
+        bool(re.search(r"^author:?", line.lower())) or
         bool(re.search(r"^\d+ words\s*$", line.lower())) or
         bool(re.search(r"^==.+==$", line.lower())) ):
             content += line
@@ -48,16 +49,18 @@ def process(input_filename, output_filename):
         sentence = re.sub(r"\(.*\d+.*\)", " ", sentence)
         # if a source is mentioned in parentheses with " but no date, we substitute that part of the sentence with an empty string
         sentence = re.sub(r'\(.*[‘’“”\'\"]\w+[‘’“”\'\"].*\)', " ", sentence)
+        # urls are deleted as well
+        sentence = re.sub(r'^http.+', ' ', sentence)
 
         # split the sentence into words
         words = sentence.split(" ")
-        # delete urls
-        words = [w for w in words if bool(re.search(r"^http.+", w)) is False]
 
-        # delete strange symbols like arrows at the beginning of a word
+        # delete strange symbols like arrows at the beginning of a word and words that are only symbols
         words_without_symbols = []
         for w in words:
-            if bool(re.search(r"^\W\w+", w)) is True:
+            if bool(re.search(r"^\W+$", w)) is True:
+                pass
+            elif bool(re.search(r"^\W\w+", w)) is True:
                 words_without_symbols.append(w[1:])
             else:
                 words_without_symbols.append(w)

@@ -121,10 +121,10 @@ def analyse(i, sentences, tokenizer, complexity):
     return round(fog, 4)
 
 
-def process (f, c):
+def process (f, c, x):
     tokenizer = "nltk"
     filename = "PreprocessedData/thesis/" + f
-    complexity = 3
+    complexity = x
     sentences_per_chunk = c
 
     # read in the document
@@ -187,9 +187,11 @@ variances = { 'length_of_chunk' : [],
 # analyse each thesis
 for k, thesis in enumerate(theses_to_analyze):
     print("Analysing thesis", k+1, "of", len(theses_to_analyze))
-    # insert the number of sentences per chunk here!!!
+    # can be adjusted to get a more robust measure!?
+    x = 5
+    # number of sentences per chunk
     for m in [0, 1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 75, 50, 40, 30, 20, 10]:
-        process(thesis, m)
+        process(thesis, m, x)
 
 print("The analysis is finished. \nStoring data.............")
 

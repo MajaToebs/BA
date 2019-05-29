@@ -21,18 +21,19 @@ def process(input_filename, output_filename):
 
         # if a line contains meta-information about the document or is a heading or page break, ignore that line
         if not (bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
-                bool(re.search(r"^\d\.(\d\.?)* \w+( [\w-]+)* \d+ ?$", line.lower())) or
+                bool(re.search(r"^\d\.(\d\.?)* \w+( [\w-]+)* \d+ ?$", line.lower())) or #?
                 bool(re.search(r"^date of submission", line.lower())) or
                 bool(re.search(r"^signature:?", line.lower())) or
                 bool(re.search(r"definiert", line.lower())) or
                 bool(re.search(r"^\d(\.\d\.?)+ \w+", line.lower())) or
                 bool(re.search(r" \.{2,}", line.lower())) or
                 bool(re.search(r"P a g e", line)) or
-                bool(re.search(r"^==.+==$", line.lower())) ):
+                bool(re.search(r"^==.+==$", line.lower())) or
+                (line.count(" ") < 6 and (line[-1] or line[-2] in [".", ",", "?", "!", ";", ":"])) ) :
             content += line
 
     # some documents do not end with a final dot, but an end of sentence is needed for application of the readability indices
-    if content[-1] != ".":
+    if not (content[-1] or content[-2] in [".", "?", "!"]):
         content += "."
 
     # tokenize the given text into sentences with nltk, sentences is then a list of lists consisting of strings
@@ -48,7 +49,8 @@ def process(input_filename, output_filename):
         # delete page numbers
         sentence = re.sub(r" \d+  ", " ", sentence)
         # delete unknown symbols which lead into a sentence
-        sentence = re.sub(r"^\W( \w+)+", sentence[1:], sentence)
+        if re.findall(r"^\W( \w+)+", sentence):
+            sentence = sentence[1:]
 
         # split the sentence into words
         words = sentence.split(" ")
@@ -88,7 +90,7 @@ def process(input_filename, output_filename):
                 # for the last word of a sentence
                 else:
                     # separate sentences with line breaks and a period, if there is no other symbol to mark the end of sentence
-                    if bool(re.search(r"\.$", w)) is True:
+                    if bool(re.search(r"\w*[.?!]$", w)) or bool(re.search(r"\.[‘’“”\'\"]$", w)) is True:
                         text_out.write('\n')
                     else:
                         text_out.write('.\n')
