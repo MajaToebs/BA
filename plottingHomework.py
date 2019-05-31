@@ -72,12 +72,6 @@ def plot_scatterplot():
 # read in the variances from the file
 def plot_variances():
     plt.close('all')
-    df_var_0 = pd.read_csv("variancesHomework_0.csv", header=0, index_col=0)
-    df_var_1 = pd.read_csv("variancesHomework_1.csv", header=0, index_col=0)
-    #df_var_2 = pd.read_csv("variancesHomework_2.csv", header=0, index_col=0) OSMOSIS
-    df_var_3 = pd.read_csv("variancesHomework_3.csv", header=0, index_col=0)
-
-    df_variances = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
 
     # get the chunk sizes and their mean variances
     chunk_sizes = list(sorted(set(df_variances['length_of_chunk'])))
@@ -105,12 +99,8 @@ def plot_variances():
 # read in the variances from the file
 def plot_deviations():
     plt.close('all')
-    df_var_0 = pd.read_csv("variancesHomework_0.csv", header=0, index_col=0)
-    df_var_1 = pd.read_csv("variancesHomework_1.csv", header=0, index_col=0)
-    # df_var_2 = pd.read_csv("variancesHomework_2.csv", header=0, index_col=0) OSMOSIS
-    df_var_3 = pd.read_csv("variancesHomework_3.csv", header=0, index_col=0)
 
-    df_deviations = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
+    df_deviations = df_variances
 
     # get the chunk sizes and their mean variances
     chunk_sizes = list(sorted(set(df_deviations['length_of_chunk'])))
@@ -134,13 +124,24 @@ def plot_deviations():
 
 
 
-df_0 = pd.read_csv("results_0.csv", header=0, index_col=0)
-df_1 = pd.read_csv("results_1.csv", header=0, index_col=0)
-df_2 = pd.read_csv("results_2.csv", header=0, index_col=0)
-df_3 = pd.read_csv("results_3.csv", header=0, index_col=0)
+df_0 = pd.read_csv("Results/results_0.csv", header=0, index_col=0)
+df_1 = pd.read_csv("Results/results_1.csv", header=0, index_col=0)
+df_2 = pd.read_csv("Results/results_2.csv", header=0, index_col=0)
+df_3 = pd.read_csv("Results/results_3.csv", header=0, index_col=0)
 
 # concatenate the results of the separate folders with documents
 df = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
+# look at the values of the definition with values of complexity 3 only
+df = df.loc[df['complexity'] == 3]
+
+df_var_0 = pd.read_csv("Results/variancesHomework_0.csv", header=0, index_col=0)
+df_var_1 = pd.read_csv("Results/variancesHomework_1.csv", header=0, index_col=0)
+#df_var_2 = pd.read_csv("Results/variancesHomework_2.csv", header=0, index_col=0) OSMOSIS
+df_var_3 = pd.read_csv("Results/variancesHomework_3.csv", header=0, index_col=0)
+
+df_variances = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
+# look at the values of the definition with values of complexity 3 only
+df_variances = df_variances.loc[df_variances['complexity']==3]
 
 all_homeworks = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/9534163.txt', 'aff-case/9534039.txt',
                  'aff-case/9535872.txt', 'aff-case/9536689.txt', 'aff-case/9533580.txt', 'aff-case/9535758.txt',

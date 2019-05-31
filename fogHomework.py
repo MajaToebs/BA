@@ -114,6 +114,7 @@ def analyse(i, sentences, tokenizer, complexity):
 
     # print the percentage of complex words
     diff_word_freq = len(diff_words_set) / len(tokenized_words) * 100
+    percentage_of_complex_words.append(diff_word_freq)
 
     # calculate the fog index
     fog = (diff_word_freq + average_sentence_length) * 0.4
@@ -121,10 +122,10 @@ def analyse(i, sentences, tokenizer, complexity):
     return round(fog, 4)
 
 
-def process (f, c):
+def process (f, c, x):
     tokenizer = "nltk"
     filename = "PreprocessedData/homework/" + f
-    complexity = 3
+    complexity = x
     sentences_per_chunk = c
 
     # read in the document
@@ -151,10 +152,12 @@ def process (f, c):
         # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
         variances['variance'].append(np.var(fog_indices))
+        variances['complexity'].append(complexity)
 
     # add this document's calculated GFIs
     for j in range(len(fog_indices)):
         data['document'].append(f)
+        data['complexity'].append(complexity)
         data['length_of_chunk'].append(sentences_per_chunk)
         data['number_of_chunk'].append(j+1)
         data['GFI'].append(fog_indices[j])
@@ -191,18 +194,26 @@ for i in range(len(theses_to_analyze)):
     print("Analyse", number_of_homeworks, "homeworks.............")
 
     data = { 'document' : [],
-        'length_of_chunk' : [],
-        'number_of_chunk' : [],
-        'GFI' : []}
+             'complexity' : [],
+            'length_of_chunk' : [],
+            'number_of_chunk' : [],
+            'GFI' : []}
 
     variances = {'length_of_chunk': [],
-                 'variance': []}
+                 'complexity' : [],
+                 'variance': [],
+                 'std' : []}
 
     # analyse each homework
     for k, homework in enumerate(theses_to_analyze[i]):
         print("Analysing homework", k+1, "of", len(theses_to_analyze[i]))
-        for m in [0, 200, 150, 100, 90, 80, 70, 60, 50, 45, 40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]:
-            process(homework, m)
+        # try different complexities
+        for x in [3, 4, 5]:
+            percentage_of_complex_words = []
+            for m in [0, 200, 150, 100, 90, 80, 70, 60, 50, 45, 40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]:
+                process(homework, m, x)
+            #print(np.median(percentage_of_complex_words))
+
 
     print("The analysis of this folder is finished. \nStoring data.............")
 

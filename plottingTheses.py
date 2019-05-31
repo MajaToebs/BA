@@ -38,7 +38,7 @@ def plot_barcharts():
 def plot_scatterplot():
     for thesis in all_theses:
         plt.close('all')
-        this_doc = df.loc[df['document']==thesis]
+        this_doc = df.loc[df['document'] == thesis]
 
         # scatter the GFIs depending on the chunk size
         plt.scatter(this_doc['length_of_chunk'], this_doc['GFI'])
@@ -63,7 +63,6 @@ def plot_scatterplot():
 # read in the variances from the file
 def plot_variances():
     plt.close('all')
-    df_variances = pd.read_csv("variancesTheses.csv", header=0, index_col=0)
 
     # get the chunk sizes and their mean variances
     chunk_sizes = list(sorted(set(df_variances['length_of_chunk'])))
@@ -91,7 +90,7 @@ def plot_variances():
 # read in the deviations from the file
 def plot_deviations():
     plt.close('all')
-    df_deviations = pd.read_csv("variancesTheses.csv", header=0, index_col=0)
+    df_deviations = df_variances
 
     # get the chunk sizes and their mean variances
     chunk_sizes = list(sorted(set(df_deviations['length_of_chunk'])))
@@ -116,13 +115,19 @@ def plot_deviations():
 
 
 
-df = pd.read_csv("resultsTheses.csv", header=0, index_col=0)
-all_theses = ['en114417450.txt', 'en119716549.txt', 'en119767323.txt', 'en122940506.txt', 'en116249615.txt', 'en115002482.txt', 'en117652377.txt', 'en117661421.txt']
+df = pd.read_csv("Results/resultsTheses.csv", header=0, index_col=0)
+df = df.loc[df["complexity"]==3]
 
-plot_boxplots()
-plot_barcharts()
-plot_scatterplot()
-plot_variances()
+df_variances = pd.read_csv("Results/variancesTheses.csv", header=0, index_col=0)
+df_variances = df_variances.loc[df_variances["complexity"]==3]
+
+all_theses = ['en114417450.txt', 'en119716549.txt', 'en119767323.txt', 'en122940506.txt', 'en116249615.txt',
+              'en115002482.txt', 'en117652377.txt', 'en117661421.txt']
+
+#plot_boxplots()
+#plot_barcharts()
+#plot_scatterplot()
+#plot_variances()
 plot_deviations()
 
 plt.close('all')

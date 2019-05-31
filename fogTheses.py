@@ -112,8 +112,9 @@ def analyse(i, sentences, tokenizer, complexity):
 
     diff_words_set = get_complex_words(tokenized_words, complexity)
 
-    # print the percentage of complex words
+    # calculate the percentage of complex words
     diff_word_freq = len(diff_words_set) / len(tokenized_words) * 100
+    percentage_of_complex_words.append(diff_word_freq)
 
     # calculate the fog index
     fog = (diff_word_freq + average_sentence_length) * 0.4
@@ -130,7 +131,10 @@ def process (f, c, x):
     # read in the document
     with open(filename, "r", encoding="utf-8-sig") as raw:
         text_in = raw.read().replace("\n", " ")
-        raw.close()
+        # TRY to shorten sentences
+        #text_in = text_in.replace(";", ".")
+        #text_in = text_in.replace(":", ".")
+        #raw.close()
 
     # tokenize the text into sentences with nltk and then print how many there are
     sentences = sent_tokenize(text_in)
@@ -150,12 +154,14 @@ def process (f, c, x):
             fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
             # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
+        variances['complexity'].append(complexity)
         variances['variance'].append(np.var(fog_indices))
         variances['std'].append(np.std(fog_indices))
 
     # add this document's calculated GFIs
     for j in range(len(fog_indices)):
         data['document'].append(f)
+        data['complexity'].append(complexity)
         data['length_of_chunk'].append(sentences_per_chunk)
         data['number_of_chunk'].append(j+1)
         data['GFI'].append(fog_indices[j])
@@ -177,11 +183,13 @@ number_of_theses = len(theses_to_analyze)
 print("Analyse", number_of_theses, "theses.............")
 
 data = { 'document' : [],
-    'length_of_chunk' : [],
-    'number_of_chunk' : [],
-    'GFI' : []}
+         'complexity' : [],
+        'length_of_chunk' : [],
+        'number_of_chunk' : [],
+        'GFI' : []}
 
 variances = { 'length_of_chunk' : [],
+              'complexity' : [],
                 'variance' : [],
                 'std' : [] }
 
@@ -190,22 +198,24 @@ variances = { 'length_of_chunk' : [],
 for k, thesis in enumerate(theses_to_analyze):
     print("Analysing thesis", k+1, "of", len(theses_to_analyze))
     # can be adjusted to get a more robust measure!?
-    x = 5
-    # number of sentences per chunk
-    for m in [0, 1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 75, 50, 40, 30, 20, 10]:
-        process(thesis, m, x)
+    for x in [3, 4, 5]:
+        percentage_of_complex_words = []
+        # number of sentences per chunk
+        for m in [0, 1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 75, 50, 40, 30, 20, 10]:
+            process(thesis, m, x)
+        #print(np.median(percentage_of_complex_words))
 
 print("The analysis is finished. \nStoring data.............")
 
 # convert the dictionary with the data to a dataframe
-df = pd.DataFrame(data=data)
+df_fog = pd.DataFrame(data=data)
 # drop duplicate rows
-df = df.drop_duplicates(keep='first')
+df_fog = df_fog.drop_duplicates(keep='first')
 
 # write the collected data into a csv-file
 data_out = open("Results/resultsTheses.csv", "w")
 # convert the data to a csv and write it into the given file
-data_out.write(df.to_csv())
+data_out.write(df_fog.to_csv())
 data_out.close()
 
 # store variances
