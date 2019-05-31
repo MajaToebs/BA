@@ -151,6 +151,7 @@ def process (f, c, x):
             # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
         variances['variance'].append(np.var(fog_indices))
+        variances['std'].append(np.std(fog_indices))
 
     # add this document's calculated GFIs
     for j in range(len(fog_indices)):
@@ -181,7 +182,8 @@ data = { 'document' : [],
     'GFI' : []}
 
 variances = { 'length_of_chunk' : [],
-                'variance' : [] }
+                'variance' : [],
+                'std' : [] }
 
 
 # analyse each thesis
@@ -201,18 +203,18 @@ df = pd.DataFrame(data=data)
 df = df.drop_duplicates(keep='first')
 
 # write the collected data into a csv-file
-data_out = open("resultsTheses.csv", "w")
+data_out = open("Results/resultsTheses.csv", "w")
 # convert the data to a csv and write it into the given file
 data_out.write(df.to_csv())
 data_out.close()
 
 # store variances
-data_out = open("variancesTheses.csv", "w")
+data_out = open("Results/variancesTheses.csv", "w")
 df_var = pd.DataFrame(variances)
 data_out.write(df_var.to_csv())
 data_out.close()
 
 
-print("The collected data has been written to 'resultsTheses.csv' and 'variancesTheses.csv'. \nGo, have a look!")
+print("The collected data has been written to 'Results/resultsTheses.csv' and 'Results/variancesTheses.csv'. \nGo, have a look!")
 
 sys.exit()

@@ -212,18 +212,18 @@ for i in range(len(theses_to_analyze)):
     df = df.drop_duplicates(keep='first')
 
     # write the collected data into csv-files
-    data_out = open("results_" + str(i) + ".csv", "w")
+    data_out = open("Results/results_" + str(i) + ".csv", "w")
     # convert the data to a csv and write it into the given file
     data_out.write(df.to_csv())
     data_out.close()
 
     # store variances
-    data_out = open("variancesHomework_" + str(i) + ".csv", "w")
+    data_out = open("Results/variancesHomework_" + str(i) + ".csv", "w")
     df_var = pd.DataFrame(variances)
     data_out.write(df_var.to_csv())
     data_out.close()
 
-    print("The collected data has been written to 'results_i.csv' and 'variancesHomework_i.csv'. \nGo, have a look!")
+    print("The collected data has been written to 'Results/results_i.csv' and 'Results/variancesHomework_i.csv'. \nGo, have a look!")
 
 print("Completely finished.")
 
