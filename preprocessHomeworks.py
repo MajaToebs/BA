@@ -12,34 +12,33 @@ def process(input_filename, output_filename):
 
     content = ""
     for line in text_in:
-        # if the bibliography starts, we ignore the rest of the document by breaking the loop
+        # if the bibliography starts, we ignore the rest of the document
         if bool(re.search(r"^bibliography:?\s*$", line.lower())) or \
-            bool(re.search(r"^appendix ([\sa-z0-9:])+$", line.lower())) or \
-            bool(re.search(r"^7 -  undertaking of the research team", line.lower())) or \
+            bool(re.search(r"works cited", line.lower())) or \
             bool(re.search(r"^references:?\s*$", line.lower())):
             break
 
-        # if a line contains meta-information about the document or is a heading or page break, ignore that line
-        if (bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
-                bool(re.search(r"^\d\.(\d\.?)* \w+( [\w-]+)* \d+ ?$", line.lower())) or #?
-                bool(re.search(r"^date of submission:? ", line.lower())) or
-                bool(re.search(r"^signature:? ", line.lower())) or
-                bool(re.search(r"^\d(\.\d\.?)+ \w+", line.lower())) or
-                bool(re.search(r" \.{4,}", line.lower())) or
-                bool(re.search(r"P a g e", line)) or
-                bool(re.search(r"^==.+==$", line.lower())) ) :
-            pass
-        else:
-            if line.count(" ") < 6:
-                # the line has to be the end of a sentence to be considered further, if it is so short
-                # line[-3] is needed, since many lines end with a space and a line break after the dot
-                if len(line) > 2 and (line[-1] in [".", ",", "?", "!", ";", ":"] or
-                                      line[-2] in [".", ",", "?", "!", ";", ":"] or line[-3] in [".", ",", "?", "!", ";", ":"]):
-                    content += line
-            else:
-                content += line
+        '''
+        # if a line starts with a comment or formatting from a reader or 
+        if (bool(re.search(r"^kommentiert", line.lower())) or
+        bool(re.search(r"^formatiert", line.lower())) or
+        bool(re.search(r"^formatted", line.lower())) or
+        bool(re.search(r"^commented", line.lower())) or
+        bool(re.search(r" your? ", line.lower()))):
+        '''
+
+        # if a line contains meta-information about the document, ignore that line
+        if not (bool(re.search(r"^words? count", line.lower()))  or
+        bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
+        bool(re.search(r"^date of submission", line.lower())) or
+        bool(re.search(r"^signature:?", line.lower())) or
+        bool(re.search(r"^author:?", line.lower())) or
+        bool(re.search(r"^\d+ words\s*$", line.lower())) or
+        bool(re.search(r"^==.+==$", line.lower())) ):
+            content += line
 
     if len(content) < 3:
+        print("TOO SHORT:", input_filename)
         return
 
     # some documents do not end with a final dot, but an end of sentence is needed for application of the readability indices
@@ -55,24 +54,19 @@ def process(input_filename, output_filename):
         # if a source is mentioned in parentheses, we substitute that part of the sentence with an empty string
         sentence = re.sub(r"\(.*\d+.*\)", " ", sentence)
         # if a source is mentioned in parentheses with " but no date, we substitute that part of the sentence with an empty string
-        sentence = re.sub(r'\(.*[‘’“”\'\"].+[‘’“”\'\"].*\)', " ", sentence)
-        # delete page numbers
-        sentence = re.sub(r" \d+  ", " ", sentence)
-        # delete unknown symbols which lead into a sentence
-        if re.findall(r"^\W( \w+)+", sentence):
-            sentence = sentence[1:]
+        sentence = re.sub(r'\(.*[‘’“”\'\"]\w+[‘’“”\'\"].*\)', " ", sentence)
+        # urls are deleted as well
+        sentence = re.sub(r'^http.+', ' ', sentence)
 
         # split the sentence into words
         words = sentence.split(" ")
-        # delete urls and words that consist of at least 4 dots
-        words = [w for w in words if (bool(re.search(r"^http.+", w)) is False) and \
-                 (bool(re.search(r"(\.{4,})|…{2,}", w)) is False)]
-        # delete strange symbols like arrows at the beginning of a word
+
+        # delete strange symbols like arrows at the beginning of a word and words that are only symbols
         words_without_symbols = []
         for w in words:
-            if bool(re.search(r"^(\.\.\.?)|…$", w)) is True:
-                words_without_symbols.append(".")
-            elif bool(re.search(r"^[^(‘’“”\'\"\w]\w*", w)) is True:
+            if bool(re.search(r"^\W+$", w)) is True:
+                pass
+            elif bool(re.search(r"^\W\w+", w)) is True:
                 words_without_symbols.append(w[1:])
             else:
                 words_without_symbols.append(w)
@@ -95,7 +89,7 @@ def process(input_filename, output_filename):
                     w = w[:-1]
                 text_out.write(w)
                 # separate words with white spaces
-                if j != len(s)-1:
+                if j != len(s) - 1:
                     text_out.write(" ")
                 # for the last word of a sentence
                 else:
@@ -110,7 +104,15 @@ def process(input_filename, output_filename):
 
 
 # execute the preprocessing for all files in one directory
-for f in os.listdir("Data/English/theses"):
-    # look for English texts only
-    if f.startswith("en"):
-        process("Data/English/theses/" + f, "PreprocessedData/English/theses/" + f + ".txt")
+for f in os.listdir("Data/English/homework/essays"):
+    if not (f.startswith("cor") or f.startswith("dupl")):
+        process("Data/English/homework/essays/" + f, "PreprocessedData/English/homework/essays/" + f + ".txt")
+for f in os.listdir("Data/English/homework/aff-case"):
+    if not (f.startswith("cor") or f.startswith("dupl")):
+        process("Data/English/homework/aff-case/" + f, "PreprocessedData/English/homework/aff-case/" + f + ".txt")
+for f in os.listdir("Data/English/homework/osmosis"):
+    if not (f.startswith("cor") or f.startswith("dupl")):
+        process("Data/English/homework/osmosis/" + f, "PreprocessedData/English/homework/osmosis/" + f + ".txt")
+for f in os.listdir("Data/English/homework/mission-command"):
+    if not (f.startswith("cor") or f.startswith("dupl")):
+        process("Data/English/homework/mission-command/" + f, "PreprocessedData/English/homework/mission-command/" + f + ".txt")
