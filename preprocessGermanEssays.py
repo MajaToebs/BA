@@ -18,14 +18,16 @@ def process(input_filename, output_filename):
             bool(re.search(r"^references:?\s*$", line.lower())):
             break
 
-        # if a line starts with a comment or formatting from a reader or contains meta-information about the document, ignore that line
+        '''
+        # if a line starts with a comment or formatting from a reader or 
         if (bool(re.search(r"^kommentiert", line.lower())) or
         bool(re.search(r"^formatiert", line.lower())) or
         bool(re.search(r"^formatted", line.lower())) or
         bool(re.search(r"^commented", line.lower())) or
         bool(re.search(r" your? ", line.lower()))):
-            continue
+        '''
 
+        # if a line contains meta-information about the document, ignore that line
         if not (bool(re.search(r"^words? count", line.lower()))  or
         bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
         bool(re.search(r"^date of submission", line.lower())) or
@@ -35,8 +37,12 @@ def process(input_filename, output_filename):
         bool(re.search(r"^==.+==$", line.lower())) ):
             content += line
 
+    if len(content) < 3:
+        print("TOO SHORT:", input_filename)
+        return
+
     # some documents do not end with a final dot, but an end of sentence is needed for application of the readability indices
-    if content[-1] != ".":
+    if content[-1] not in [".", "?", "!"] and content[-2] not in [".", "?", "!"]:
         content += "."
 
     # tokenize the given text into sentences with nltk, sentences is then a list of lists consisting of strings
@@ -74,31 +80,39 @@ def process(input_filename, output_filename):
 
     # iterate over sentences to filter out the ones which are too short to be real sentences
     for i, s in enumerate(sentences):
-        # filter out sentences that are just one word
+        # filter out words that contain only whitespaces
+        s = [w for w in s if len(w) > 0]
+        # filter out sentences that consist only out of one word
         if (len(s) > 1):
-            for w in s:
-                # filter out sentences that contain only whitespaces
-                if len(w)>0:
-                    text_out.write(w)
-                    # separate words with white spaces
+            for j, w in enumerate(s):
+                if bool(re.search(r"\w+\.\.$", w)):
+                    w = w[:-1]
+                text_out.write(w)
+                # separate words with white spaces
+                if j != len(s) - 1:
                     text_out.write(" ")
-            # separate sentences with line breaks
-            text_out.write('\n')
+                # for the last word of a sentence
+                else:
+                    # separate sentences with line breaks and a period, if there is no other symbol to mark the end of sentence
+                    if bool(re.search(r"\w*[.?!]$", w)) or bool(re.search(r"\.[‘’“”\'\"]$", w)):
+                        text_out.write('\n')
+                    else:
+                        text_out.write('.\n')
 
     text_out.close()
 
 
 
 # execute the preprocessing for all files in one directory
-for f in os.listdir("Data/homework/essays"):
+for f in os.listdir("Data/English/homework/essays"):
     if not (f.startswith("cor") or f.startswith("dupl")):
-        process("Data/homework/essays/" + f, "PreprocessedData/homework/essays/" + f + ".txt")
-for f in os.listdir("Data/homework/aff-case"):
+        process("Data/English/homework/essays/" + f, "PreprocessedData/English/homework/essays/" + f + ".txt")
+for f in os.listdir("Data/English/homework/aff-case"):
     if not (f.startswith("cor") or f.startswith("dupl")):
-        process("Data/homework/aff-case/" + f, "PreprocessedData/homework/aff-case/" + f + ".txt")
-for f in os.listdir("Data/homework/osmosis"):
+        process("Data/English/homework/aff-case/" + f, "PreprocessedData/English/homework/aff-case/" + f + ".txt")
+for f in os.listdir("Data/English/homework/osmosis"):
     if not (f.startswith("cor") or f.startswith("dupl")):
-        process("Data/homework/osmosis/" + f, "PreprocessedData/homework/osmosis/" + f + ".txt")
-for f in os.listdir("Data/homework/mission-command"):
+        process("Data/English/homework/osmosis/" + f, "PreprocessedData/English/homework/osmosis/" + f + ".txt")
+for f in os.listdir("Data/English/homework/mission-command"):
     if not (f.startswith("cor") or f.startswith("dupl")):
-        process("Data/homework/mission-command/" + f, "PreprocessedData/homework/mission-command/" + f + ".txt")
+        process("Data/English/homework/mission-command/" + f, "PreprocessedData/English/homework/mission-command/" + f + ".txt")
