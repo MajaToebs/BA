@@ -1,24 +1,16 @@
-# !/usr/bin/python3
-import warnings
-import numpy as np
+# this is for the comparison of the different indices
 
+import warnings
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 import nltk
-#nltk.download('punkt') #only DL if don't already have
-#nltk.download('popular')
-
 # import the tokenizer from nltk
 from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 
 # to find out whether a word contains only alphabetic characters (works only with english texts, since äöü are not included)
 from string import ascii_letters
-
-# import spacy with the English module
-import spacy
-nlp = spacy.load("en_core_web_sm")
 
 import textstat
 # set of easy words to get complicated ones
@@ -31,27 +23,23 @@ from pyphen import Pyphen
 import sys
 from io import open
 
+import numpy as np
+
 
 # tokenize a text into alphabetical words
 def word_tokenizing(text, tokenizer):
     # tokenize words and filter out punctuations, numbers etc (non-alpha)
-    tokenized_words = []
-    if tokenizer == "spacy":
-        tokenized_words = nlp(text)
-        # is_alpha takes only tokens which do not contain spaces or digits
-        tokenized_words = [token.text.lower() for token in tokenized_words if token.is_alpha == True]
-    elif tokenizer == "nltk":
-        tokenized_words = word_tokenize(text)
-        only_alpha_words = []
-        for word in tokenized_words:
-            word = word.lower()
-            if all(c in ascii_letters + '-' for c in word):
-                only_alpha_words.append(word)
-        tokenized_words = only_alpha_words
+    tokenized_words = word_tokenize(text)
+    only_alpha_words = []
+    for word in tokenized_words:
+        word = word.lower()
+        if all(c in ascii_letters + '-' for c in word):
+            only_alpha_words.append(word)
+    tokenized_words = only_alpha_words
     return tokenized_words
 
 
-# count syllables
+# count syllables by hyphenation
 def count_syllables(word):
     # necessary for the syllable count
     dic = Pyphen(lang='en_EN')
@@ -63,8 +51,7 @@ def count_syllables(word):
 # get complex words out of all words
 def get_complex_words(words, complexity):
     # difficult words are those with syllables >= complexity and a few other restrictions (see below)
-    # easy_word_set is provided by Textstat as
-    # a list of common words
+    # easy_word_set is provided by Textstat as a list of common words
     diff_words_set = []
 
     for word in words:
@@ -87,7 +74,7 @@ def get_complex_words(words, complexity):
     return diff_words_set
 
 
-def analyse(i, sentences, tokenizer, complexity):
+def analyse(sentences, tokenizer, complexity):
     tokenized_words = []
     for sent in sentences:
         words = word_tokenizing(sent, tokenizer)
@@ -117,15 +104,15 @@ def process (f, c, x):
     # read in the document
     with open(filename, "r", encoding="utf-8-sig") as raw:
         text_in = raw.read().replace("\n", " ")
-        # TRY to shorten sentences
+        # possible complexity adaptation to shorten sentences
         #text_in = text_in.replace(";", ".")
         #text_in = text_in.replace(":", ".")
         #raw.close()
 
     # tokenize the text into sentences with nltk and then print how many there are
-    sentences = sent_tokenize(text_in)
+    sentences = my_tokenizer.tokenize(text_in)
 
-    # store all fog indices of the different chunks
+    # store all indices of the different chunks
     fog_indices = []
     indices_GFI = []
     indices_FKGL = []
@@ -136,7 +123,7 @@ def process (f, c, x):
     # analyse the whole text as one chunk, if 0 is given as sentences_per_chunk or sentences_per_chunk is bigger than the document
     if sentences_per_chunk == 0 or sentences_per_chunk > len(sentences):
         sentences_per_chunk = len(sentences)
-        fog_indices.append(analyse(0, sentences, tokenizer, complexity))
+        fog_indices.append(analyse(sentences, tokenizer, complexity))
         text = text_in
         indices_GFI.append(textstat.textstat.gunning_fog(text))
         indices_FKGL.append(textstat.textstat.flesch_kincaid_grade(text))
@@ -149,20 +136,28 @@ def process (f, c, x):
         for i in range(1, int(n+1)):
             chunk_i = sentences[(i-1)*sentences_per_chunk:i*sentences_per_chunk]
             text = ' '.join(chunk_i)
-            fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
+            fog_indices.append(analyse(chunk_i, tokenizer, complexity))
             indices_GFI.append(textstat.textstat.gunning_fog(text))
             indices_FKGL.append(textstat.textstat.flesch_kincaid_grade(text))
             indices_CLI.append(textstat.textstat.coleman_liau_index(text))
             indices_ARI.append(textstat.textstat.automated_readability_index(text))
             indices_SMOG.append(textstat.textstat.smog_index(text))
 
-
-
         # calculate the variances of GFIs of this document for this chunk size
-        #variances['length_of_chunk'].append(str(sentences_per_chunk))
-        #variances['complexity'].append(complexity)
-        #variances['variance'].append(np.var(fog_indices))
-        #variances['std'].append(np.std(fog_indices))
+        variances['length_of_chunk'].append(str(sentences_per_chunk))
+        variances['complexity'].append(complexity)
+        variances['varianceFog'].append(np.var(fog_indices))
+        variances['stdFog'].append(np.std(fog_indices))
+        variances['varianceGFI'].append(np.var(fog_indices))
+        variances['stdGFI'].append(np.std(fog_indices))
+        variances['varianceARI'].append(np.var(fog_indices))
+        variances['stdARI'].append(np.std(fog_indices))
+        variances['varianceCLI'].append(np.var(fog_indices))
+        variances['stdCLI'].append(np.std(fog_indices))
+        variances['varianceSMOG'].append(np.var(fog_indices))
+        variances['stdSMOG'].append(np.std(fog_indices))
+        variances['varianceFKGL'].append(np.var(fog_indices))
+        variances['stdFKGL'].append(np.std(fog_indices))
 
     # add this document's calculated GFIs
     for j in range(len(fog_indices)):
@@ -182,6 +177,15 @@ def process (f, c, x):
 
 import os
 import pandas as pd
+
+# abbreviations for sentence tokenisation
+extra_abbreviations_en = ['dr', 'vs', 'mr', 'mrs', 'prof', 'inc', 'i.e', 'e.g', 'approx', 'apt', 'appt', 'dept', 'est',
+                       'min', 'max', 'misc', 'no', 'acc', 'fig', 'a.m', 'p.m', 'a.d', 'b.c', 'etc', 'ca', 'cf', 'ed',
+                       'est', 'f', 'ff', 'pres']
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+punkt_param = PunktParameters()
+punkt_param.abbrev_types = set(extra_abbreviations_en)
+my_tokenizer = PunktSentenceTokenizer(punkt_param)
 
 # get the theses we want to analyze
 theses_to_analyze = []
@@ -204,10 +208,21 @@ data = { 'document' : [],
          'SMOG' : [],
          'CLI' : []}
 
-#variances = { 'length_of_chunk' : [],
-#              'complexity' : [],
-#                'variance' : [],
-#                'std' : [] }
+variances = { 'length_of_chunk' : [],
+              'complexity' : [],
+                'varianceFog' : [],
+                'stdFog' : [],
+              'varianceGFI' : [],
+                'stdGFI' : [],
+              'varianceARI' : [],
+                'stdARI' : [],
+              'varianceCLI' : [],
+                'stdCLI' : [],
+              'varianceSMOG' : [],
+                'stdSMOG' : [],
+              'varianceFKGL' : [],
+                'stdFKGL' : [],
+              }
 
 
 # analyse each thesis
@@ -234,10 +249,10 @@ data_out.write(df_fog.to_csv())
 data_out.close()
 
 # store variances
-#data_out = open("Results/variancesTheses.csv", "w")
-#df_var = pd.DataFrame(variances)
-#data_out.write(df_var.to_csv())
-#data_out.close()
+data_out = open("Results/variancesTheses.csv", "w")
+df_var = pd.DataFrame(variances)
+data_out.write(df_var.to_csv())
+data_out.close()
 
 
 print("The collected data has been written to 'Results/resultsIndicesTheses.csv'. \nGo, have a look!")
