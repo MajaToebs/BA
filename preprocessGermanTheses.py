@@ -1,10 +1,6 @@
 from io import open
-from nltk.tokenize import sent_tokenize
 import re
 import os
-
-
-
 
 def process(input_filename, output_filename):
     # read in the given document
@@ -19,10 +15,7 @@ def process(input_filename, output_filename):
     for line in text_in:
         # if the bibliography starts, we ignore the rest of the document by breaking the loop
         if (bool(re.search(r"^\d{0,3} ?literaturverzeichnis.{0,5}$", line.lower())) or
-            #bool(re.search(r"^(.{1,5} )?tabellenverzeichnis.{1,5}$", line.lower())) or
-            #bool(re.search(r"^(.{1,5} )?abbildungsverzeichnis.{1,5}$", line.lower())) or
             bool(re.search(r"^\d{0,3} ?anhang.{0,5}$", line.lower()))):
-            print("broken due to", line, input_filename)
             break
 
         # if a line contains meta-information about the document or is a heading or page break, ignore that line
@@ -42,6 +35,7 @@ def process(input_filename, output_filename):
                 bool(re.search(r"^\d* vgl\.:? ", line.lower()))) :
             pass
         else:
+            # delete duplicate lines (usually footnotes or descriptions of figures etc.)
             if line_before in line or line in line_before:
                 continue
             if line.count(" ") < 5:
@@ -66,7 +60,7 @@ def process(input_filename, output_filename):
 
     # tokenize the given text into sentences with nltk, sentences is then a list of lists consisting of strings
     content = content.replace("\n", " ")
-    sentences = sent_tokenize(content)
+    sentences = my_tokenizer.tokenize(content)
 
     # filter out sources, urls, page numbers
     for index, sentence in enumerate(sentences):
@@ -109,6 +103,7 @@ def process(input_filename, output_filename):
         # filter out sentences that consist only out of one word
         if (len(s) > 1):
             for j, w in enumerate(s):
+                # if the word ends with two dots, delete one of them
                 if bool(re.search(r"\w+\.\.$", w)):
                     w = w[:-1]
                 text_out.write(w)
@@ -125,7 +120,15 @@ def process(input_filename, output_filename):
 
     text_out.close()
 
-
+# prepare abbreviations for sentence tokenizer
+extra_abbreviations_de = ['bzw', 'z.b', 'm.m.n', 'hr', 'fr', 'bspw', 'vgl', 'ing', 'msc', 'm.sc', 'b.sc' 'bsc', 'ebd',
+                          's', 'f', 'ff', 's.o', 'ca', 'abb', 'anm', 'geb', 'techn', 'ggf', 'allg', 'd.h', 'd.i', 'etc',
+                          'evtl', 'od', 's', 'ggf', 's.o', 's.u', 's.a', 'u.a', 'u.ä', 'u.u', 'usw', 'u.z', 'v.a', 'z.t', 'z.zt']
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+punkt_param = PunktParameters()
+# add the abbreviations to the tokenizer
+punkt_param.abbrev_types = set(extra_abbreviations_de)
+my_tokenizer = PunktSentenceTokenizer(punkt_param)
 
 # execute the preprocessing for all files in one directory
 for f in os.listdir("Data/German/theses"):

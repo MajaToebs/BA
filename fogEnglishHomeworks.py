@@ -25,7 +25,7 @@ import nltk
 import numpy as np
 
 # import the tokenizer from nltk
-from nltk.tokenize import sent_tokenize
+#from nltk.tokenize import sent_tokenize
 from nltk.tokenize import word_tokenize
 
 # to find out whether a word contains only alphabetic characters (works only with english texts, since äöü are not included)
@@ -134,7 +134,7 @@ def process (f, c, x):
         raw.close()
 
     # tokenize the text into sentences with nltk and then print how many there are
-    sentences = sent_tokenize(text_in)
+    sentences = my_tokenizer.tokenize(text_in)
 
     # store all fog indices of the different chunks
     fog_indices = []
@@ -167,6 +167,15 @@ def process (f, c, x):
 
 import os
 import pandas as pd
+
+# abbreviations for sentence tokenisation
+extra_abbreviations_en = ['dr', 'vs', 'mr', 'mrs', 'prof', 'inc', 'i.e', 'e.g', 'approx', 'apt', 'appt', 'dept', 'est',
+                       'min', 'max', 'misc', 'no', 'acc', 'fig', 'a.m', 'p.m', 'a.d', 'b.c', 'etc', 'ca', 'cf', 'ed',
+                       'est', 'f', 'ff', 'pres']
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+punkt_param = PunktParameters()
+punkt_param.abbrev_types = set(extra_abbreviations_en)
+my_tokenizer = PunktSentenceTokenizer(punkt_param)
 
 # get the theses we want to analyze
 theses_to_analyze = []

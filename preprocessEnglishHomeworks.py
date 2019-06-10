@@ -1,8 +1,6 @@
 from io import open
-from nltk.tokenize import sent_tokenize
 import re
 import os
-
 
 def process(input_filename, output_filename):
     # read in the given document
@@ -18,15 +16,6 @@ def process(input_filename, output_filename):
             bool(re.search(r"^references:?\s*$", line.lower())):
             break
 
-        '''
-        # if a line starts with a comment or formatting from a reader or 
-        if (bool(re.search(r"^kommentiert", line.lower())) or
-        bool(re.search(r"^formatiert", line.lower())) or
-        bool(re.search(r"^formatted", line.lower())) or
-        bool(re.search(r"^commented", line.lower())) or
-        bool(re.search(r" your? ", line.lower()))):
-        '''
-
         # if a line contains meta-information about the document, ignore that line
         if not (bool(re.search(r"^words? count", line.lower()))  or
         bool(re.search(r"^(\W|\d|_)+$", line.lower()))  or
@@ -37,6 +26,7 @@ def process(input_filename, output_filename):
         bool(re.search(r"^==.+==$", line.lower())) ):
             content += line
 
+    # if there has been a mistake and the file has become too short
     if len(content) < 3:
         print("TOO SHORT:", input_filename)
         return
@@ -47,7 +37,7 @@ def process(input_filename, output_filename):
 
     # tokenize the given text into sentences with nltk, sentences is then a list of lists consisting of strings
     content = content.replace("\n", " ")
-    sentences = sent_tokenize(content)
+    sentences = my_tokenizer.tokenize(content)
 
     # filter out sources, urls, page numbers
     for index, sentence in enumerate(sentences):
@@ -85,6 +75,7 @@ def process(input_filename, output_filename):
         # filter out sentences that consist only out of one word
         if (len(s) > 1):
             for j, w in enumerate(s):
+                # if the word ends with 2 dots, delete the last one
                 if bool(re.search(r"\w+\.\.$", w)):
                     w = w[:-1]
                 text_out.write(w)
@@ -102,6 +93,16 @@ def process(input_filename, output_filename):
     text_out.close()
 
 
+
+# abbreviations for sentence tokenisation
+extra_abbreviations_en = ['dr', 'vs', 'mr', 'mrs', 'prof', 'inc', 'i.e', 'e.g', 'approx', 'apt', 'appt', 'dept', 'est',
+                       'min', 'max', 'misc', 'no', 'acc', 'fig', 'a.m', 'p.m', 'a.d', 'b.c', 'etc', 'ca', 'cf', 'ed',
+                       'est', 'f', 'ff', 'pres']
+from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
+punkt_param = PunktParameters()
+# add the abbreviations to the tokenizer
+punkt_param.abbrev_types = set(extra_abbreviations_en)
+my_tokenizer = PunktSentenceTokenizer(punkt_param)
 
 # execute the preprocessing for all files in one directory
 for f in os.listdir("Data/English/homework/essays"):
