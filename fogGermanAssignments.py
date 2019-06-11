@@ -1,6 +1,4 @@
-# coding: utf-8
-
-# # Gunning Fog Calculator
+# Gunning Fog Calculator
 # The purpose of this calculator is to determine the readability of a text. Readability is defined as the level
 # of education an individual needs to understand a text on the first reading.
 # Gunning Fog is calculated by adding the average sentence length to the percentage of difficult words
@@ -9,10 +7,7 @@
 # and the percentage of difficult words in the overall text before outputting a reading level the text is assigned to.
 # For the curious, difficult words in a text are also printed.
 # For more information on Gunning Fog: http://www.readabilityformulas.com/gunning-fog-readability-formula.php
-# the slight difference in results from online calculators is probably due to the count of complex words # working on this issue
 
-
-# !/usr/bin/python3
 import warnings
 
 import numpy as np
@@ -24,16 +19,13 @@ import nltk
 #nltk.download('punkt') #only DL if don't already have
 #nltk.download('popular')
 
-# import the tokenizer from nltk
-#from nltk.tokenize import sent_tokenize
+# import the word tokenizer from nltk
 from nltk.tokenize import word_tokenize
 
 # to find out whether a word contains only alphabetic characters (works only with english texts, since äöü are not included)
 from string import ascii_letters
 
-
-
-# for hyphenization
+# for hyphenation
 from pyphen import Pyphen
 
 # file I/O
@@ -42,9 +34,8 @@ from io import open
 
 
 # tokenize a text into alphabetical words
-def word_tokenizing(text, tokenizer):
+def word_tokenizing(text):
     # tokenize words and filter out punctuations, numbers etc (non-alpha)
-    tokenized_words = []
     tokenized_words = word_tokenize(text)
     only_alpha_words = []
     for word in tokenized_words:
@@ -67,8 +58,7 @@ def count_syllables(word):
 # get complex words out of all words
 def get_complex_words(words, complexity):
     # difficult words are those with syllables >= complexity and a few other restrictions (see below)
-    # easy_word_set is provided by Textstat as
-    # a list of common words
+    # easy_word_set is provided as a list of common words
     diff_words_set = []
 
     for word in words:
@@ -87,10 +77,10 @@ def get_complex_words(words, complexity):
     return diff_words_set
 
 
-def analyse(i, sentences, tokenizer, complexity):
+def analyse(sentences, complexity):
     tokenized_words = []
     for sent in sentences:
-        words = word_tokenizing(sent, tokenizer)
+        words = word_tokenizing(sent)
         tokenized_words.extend(words)
 
     # Determine average sentence length
@@ -109,15 +99,14 @@ def analyse(i, sentences, tokenizer, complexity):
 
 
 def process (f, c, x):
-    tokenizer = "nltk"
-    filename = "PreprocessedData/German/theses/" + f
+    filename = "Data/German/essays/" + f
     complexity = x
     sentences_per_chunk = c
 
     # read in the document
-    with open(filename, "r", encoding="utf-8-sig") as raw:
-        text_in = raw.read().replace("\n", " ")
-        # TRY to shorten sentences
+    with open(filename, "r", encoding="latin-1") as raw:
+        text_in = raw.read().replace("\n", " ").replace(".", ". ")
+        # TRY to shorten sentences for more stability
         #text_in = text_in.replace(";", ".")
         #text_in = text_in.replace(":", ".")
         #raw.close()
@@ -131,13 +120,13 @@ def process (f, c, x):
     # analyse the whole text as one chunk, if 0 is given as sentences_per_chunk or sentences_per_chunk is bigger than the document
     if sentences_per_chunk == 0 or sentences_per_chunk > len(sentences):
         sentences_per_chunk = len(sentences)
-        fog_indices.append(analyse(0, sentences, tokenizer, complexity))
+        fog_indices.append(analyse(sentences, complexity))
     # the user wants to analyse chunks of a given length
     else:
         n = len(sentences)/sentences_per_chunk
         for i in range(1, int(n+1)):
             chunk_i = sentences[(i-1)*sentences_per_chunk:i*sentences_per_chunk]
-            fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
+            fog_indices.append(analyse(chunk_i, complexity))
             # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
         variances['complexity'].append(complexity)
@@ -149,7 +138,7 @@ def process (f, c, x):
         data['document'].append(f)
         data['complexity'].append(complexity)
         data['length_of_chunk'].append(sentences_per_chunk)
-        data['number_of_chunk'].append(j+1)
+        data['number_of_chunk'].append(j + 1)
         data['GFI'].append(fog_indices[j])
 
 
@@ -164,49 +153,49 @@ extra_abbreviations_de = ['bzw', 'z.b', 'm.m.n', 'hr', 'fr', 'bspw', 'vgl', 'ing
                           'evtl', 'od', 's', 'ggf', 's.o', 's.u', 's.a', 'u.a', 'u.ä', 'u.u', 'usw', 'u.z', 'v.a', 'z.t', 'z.zt']
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 punkt_param = PunktParameters()
+# add the abbreviations to the sentence splitter
 punkt_param.abbrev_types = set(extra_abbreviations_de)
 my_tokenizer = PunktSentenceTokenizer(punkt_param)
+
+# prepare set of easy words to get complicated ones
+with open("german_easy_words.txt", "r") as raw:
+    easy_words = raw.read().replace("\n", " ")
+    easy_word_set = easy_words.split(" ")
 
 # get the texts we want to analyze
 essays_to_analyze = []
 summaries_to_analyze = []
 # executes for all files in one directory
 for f in os.listdir("Data/German/essays/L1"):
-    essays_to_analyze.append(f)
-for f in os.listdir("Data/German/essays/"):
-    summaries_to_analyze.append(f)
+    essays_to_analyze.append("L1/"+f)
+for f in os.listdir("Data/German/essays/summaryL1"):
+    summaries_to_analyze.append("summaryL1/"+f)
 
-number_of_theses = len(texts_to_analyze)
-print("Analyse", number_of_theses, "German theses.............")
+number_of_theses = len(essays_to_analyze) + len(summaries_to_analyze)
+print("Analyse", number_of_theses, "German assignments.............")
 
-data = { 'document' : [],
+
+
+data = {'document' : [],
          'complexity' : [],
         'length_of_chunk' : [],
         'number_of_chunk' : [],
         'GFI' : []}
 
-variances = { 'length_of_chunk' : [],
+variances = {'length_of_chunk' : [],
               'complexity' : [],
                 'variance' : [],
-                'std' : [] }
+                'std' : []}
 
-# prepare set of easy words to get complicated ones
-with open("germanStopWords", "r") as raw:
-    easy_words = raw.read().replace("\n", " ")
-    easy_word_set = easy_words.split(" ")
-
-# analyse each thesis
-for k, thesis in enumerate(texts_to_analyze):
-    print("Analysing thesis", k + 1, "of", len(texts_to_analyze))
+# analyse each ESSAY
+for k, thesis in enumerate(essays_to_analyze):
+    print("Analysing assignment", k + 1, "of", len(essays_to_analyze))
     # can be adjusted to get a more robust measure!?
-    for x in [3]:
+    for x in [3, 4, 5]:
         percentage_of_complex_words = []
         # number of sentences per chunk
-        for m in [0, 1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 75, 50, 40, 30, 20, 10]:
+        for m in [0, 200, 150, 100, 90, 80, 70, 60, 50, 45, 40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]:
             process(thesis, m, x)
-            #print(np.median(percentage_of_complex_words))
-
-print("The analysis is finished. \nStoring data.............")
 
 # convert the dictionary with the data to a dataframe
 df_fog = pd.DataFrame(data=data)
@@ -214,18 +203,64 @@ df_fog = pd.DataFrame(data=data)
 df_fog = df_fog.drop_duplicates(keep='first')
 
 # write the collected data into a csv-file
-data_out = open("Results/German/resultsTheses.csv", "w")
+data_out = open("Results/German/resultsEssays.csv", "w")
 # convert the data to a csv and write it into the given file
 data_out.write(df_fog.to_csv())
 data_out.close()
 
 # store variances
-data_out = open("Results/German/variancesTheses.csv", "w")
+data_out = open("Results/German/variancesEssays.csv", "w")
 df_var = pd.DataFrame(variances)
 data_out.write(df_var.to_csv())
 data_out.close()
 
+print("The collected data has been written to 'Results/German/resultsEssays.csv' and 'Results/German/variancesEssays.csv'."
+      " \nGo, have a look!")
 
-print("The collected data has been written to 'Results/German/resultsTheses.csv' and 'Results/German/variancesTheses.csv'. \nGo, have a look!")
 
+
+data = {'document' : [],
+         'complexity' : [],
+        'length_of_chunk' : [],
+        'number_of_chunk' : [],
+        'GFI' : []}
+
+variances = {'length_of_chunk' : [],
+              'complexity' : [],
+                'variance' : [],
+                'std' : []}
+
+# analyse each SUMMARY
+for k, thesis in enumerate(summaries_to_analyze):
+    print("Analysing assignment", k + 1, "of", len(summaries_to_analyze))
+    # can be adjusted to get a more robust measure!?
+    for x in [3, 4, 5]:
+        percentage_of_complex_words = []
+        # number of sentences per chunk
+        for m in [0, 200, 150, 100, 90, 80, 70, 60, 50, 45, 40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]:
+            process(thesis, m, x)
+            #print(np.median(percentage_of_complex_words))
+
+# convert the dictionary with the data to a dataframe
+df_fog = pd.DataFrame(data=data)
+# drop duplicate rows
+df_fog = df_fog.drop_duplicates(keep='first')
+
+# write the collected data into a csv-file
+data_out = open("Results/German/resultsSummaries.csv", "w")
+# convert the data to a csv and write it into the given file
+data_out.write(df_fog.to_csv())
+data_out.close()
+
+# store variances
+data_out = open("Results/German/variancesSummaries.csv", "w")
+df_var = pd.DataFrame(variances)
+data_out.write(df_var.to_csv())
+data_out.close()
+
+print("The collected data has been written to 'Results/German/resultsEssays.csv' and 'Results/German/variancesEssays.csv'."
+      " \nGo, have a look!")
+
+
+print("The analysis is finished.")
 sys.exit()

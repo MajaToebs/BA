@@ -1,6 +1,4 @@
-# coding: utf-8
-
-# # Gunning Fog Calculator
+# Gunning Fog Calculator
 # The purpose of this calculator is to determine the readability of a text. Readability is defined as the level
 # of education an individual needs to understand a text on the first reading.
 # Gunning Fog is calculated by adding the average sentence length to the percentage of difficult words
@@ -9,10 +7,7 @@
 # and the percentage of difficult words in the overall text before outputting a reading level the text is assigned to.
 # For the curious, difficult words in a text are also printed.
 # For more information on Gunning Fog: http://www.readabilityformulas.com/gunning-fog-readability-formula.php
-# the slight difference in results from online calculators is probably due to the count of complex words # working on this issue
 
-
-# !/usr/bin/python3
 import warnings
 
 with warnings.catch_warnings():
@@ -24,26 +19,26 @@ import nltk
 
 import numpy as np
 
-# import the tokenizer from nltk
-#from nltk.tokenize import sent_tokenize
+# import the word tokenizer from nltk
 from nltk.tokenize import word_tokenize
 
 # to find out whether a word contains only alphabetic characters (works only with english texts, since äöü are not included)
 from string import ascii_letters
 
-# import spacy with the English module
+# import spacy with the English module - for the case that the spacy tokenizer is used
 import spacy
 nlp = spacy.load("en_core_web_sm")
 
 # set of easy words to get complicated ones
 from textstat.textstat import easy_word_set
 
-# for hyphenization
+# for hyphenation
 from pyphen import Pyphen
 
 # file I/O
 import sys
 from io import open
+
 
 
 # tokenize a text into alphabetical words
@@ -77,8 +72,7 @@ def count_syllables(word):
 # get complex words out of all words
 def get_complex_words(words, complexity):
     # difficult words are those with syllables >= complexity and a few other restrictions (see below)
-    # easy_word_set is provided by Textstat as
-    # a list of common words
+    # easy_word_set is provided by Textstat as a list of common words
     diff_words_set = []
 
     for word in words:
@@ -101,7 +95,7 @@ def get_complex_words(words, complexity):
     return diff_words_set
 
 
-def analyse(i, sentences, tokenizer, complexity):
+def analyse(sentences, tokenizer, complexity):
     tokenized_words = []
     for sent in sentences:
         words = word_tokenizing(sent, tokenizer)
@@ -123,8 +117,8 @@ def analyse(i, sentences, tokenizer, complexity):
 
 
 def process (f, c, x):
+    filename = "PreprocessedData/English/homework/" + f
     tokenizer = "nltk"
-    filename = "PreprocessedData/homework/" + f
     complexity = x
     sentences_per_chunk = c
 
@@ -142,17 +136,19 @@ def process (f, c, x):
     # analyse the whole text as one chunk, if 0 is given as sentences_per_chunk or sentences_per_chunk is bigger than the document
     if sentences_per_chunk == 0 or sentences_per_chunk > len(sentences):
         sentences_per_chunk = len(sentences)
-        fog_indices.append(analyse(0, sentences, tokenizer, complexity))
+        fog_indices.append(analyse(sentences, tokenizer, complexity))
     # the user wants to analyse chunks of a given length
     else:
         n = len(sentences)/sentences_per_chunk
         for i in range(1, int(n+1)):
             chunk_i = sentences[(i-1)*sentences_per_chunk:i*sentences_per_chunk]
-            fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
+            fog_indices.append(analyse(chunk_i,tokenizer, complexity))
         # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
         variances['variance'].append(np.var(fog_indices))
         variances['complexity'].append(complexity)
+        variances['std'].append(np.std(fog_indices))
+
 
     # add this document's calculated GFIs
     for j in range(len(fog_indices)):
@@ -174,6 +170,7 @@ extra_abbreviations_en = ['dr', 'vs', 'mr', 'mrs', 'prof', 'inc', 'i.e', 'e.g', 
                        'est', 'f', 'ff', 'pres']
 from nltk.tokenize.punkt import PunktSentenceTokenizer, PunktParameters
 punkt_param = PunktParameters()
+# add the abbreviations to the sentence splitter
 punkt_param.abbrev_types = set(extra_abbreviations_en)
 my_tokenizer = PunktSentenceTokenizer(punkt_param)
 
@@ -183,16 +180,16 @@ theses_to_analyze = []
 
 # executes for all files in one directory
 essays = []
-for f in os.listdir("PreprocessedData/homework/essays"):
+for f in os.listdir("PreprocessedData/English/homework/essays"):
     essays.append("essays/" + f)
 aff_case = []
-for f in os.listdir("PreprocessedData/homework/aff-case"):
+for f in os.listdir("PreprocessedData/English/homework/aff-case"):
     aff_case.append("aff-case/" + f)
 osmosis = []
-for f in os.listdir("PreprocessedData/homework/osmosis"):
+for f in os.listdir("PreprocessedData/English/homework/osmosis"):
     osmosis.append("osmosis/" + f)
 mission_command = []
-for f in os.listdir("PreprocessedData/homework/mission-command"):
+for f in os.listdir("PreprocessedData/English/homework/mission-command"):
     mission_command.append("mission-command/" + f)
 
 theses_to_analyze = [essays, aff_case, osmosis, mission_command]
@@ -232,18 +229,18 @@ for i in range(len(theses_to_analyze)):
     df = df.drop_duplicates(keep='first')
 
     # write the collected data into csv-files
-    data_out = open("Results/results_" + str(i) + ".csv", "w")
+    data_out = open("Results/English/results_" + str(i) + ".csv", "w")
     # convert the data to a csv and write it into the given file
     data_out.write(df.to_csv())
     data_out.close()
 
     # store variances
-    data_out = open("Results/variancesHomework_" + str(i) + ".csv", "w")
+    data_out = open("Results/English/variancesHomework_" + str(i) + ".csv", "w")
     df_var = pd.DataFrame(variances)
     data_out.write(df_var.to_csv())
     data_out.close()
 
-    print("The collected data has been written to 'Results/results_i.csv' and 'Results/variancesHomework_i.csv'. \nGo, have a look!")
+    print("The collected data has been written to 'Results/English/results_i.csv' and 'Results/English/variancesHomework_i.csv'. \nGo, have a look!")
 
 print("Completely finished.")
 
