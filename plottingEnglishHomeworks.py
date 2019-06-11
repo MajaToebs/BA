@@ -9,10 +9,12 @@ import numpy as np
 def plot_boxplot():
     for m in [40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]: # setting m to a high number doesn't make sense for boxplots
         my_doc_chunk_m = df.loc[df['length_of_chunk'] == m]
-        my_doc_chunk_m.boxplot(column='GFI', by='document', figsize=(14,7))
-        plt.ylabel('GFI')
-        plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
-        plt.savefig('Plots/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
+        if len(my_doc_chunk_m) > 5:
+            my_doc_chunk_m.boxplot(column='GFI', by='document', figsize=(14,7))
+            plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
+            plt.ylabel('GFI')
+            plt.xticks(rotation=90)
+            plt.savefig('Plots/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
 
 
 
@@ -36,7 +38,7 @@ def plot_barchart():
             plt.gcf().set_size_inches(7, 3.5)
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
-            plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
+            plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
             plt.savefig('Plots/homework/bar/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
 
 # SCATTER PLOT
@@ -65,6 +67,7 @@ def plot_scatterplot():
         plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', color='r')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
+        plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
         plt.savefig('Plots/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
 
 # VARIANCES
@@ -91,12 +94,12 @@ def plot_variances():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
+    plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
     plt.savefig('Plots/homework/variances.svg')
 
 
-# VARIANCES
-# display variances of chunks
-# read in the variances from the file
+# DEVIATIONS
+# display deviations of chunks
 def plot_deviations():
     plt.close('all')
 
@@ -120,6 +123,7 @@ def plot_deviations():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean deviations of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
+    plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
     plt.savefig('Plots/homework/deviations.svg')
 
 
@@ -136,7 +140,7 @@ df = df.loc[df['complexity'] == 3]
 
 df_var_0 = pd.read_csv("Results/variancesHomework_0.csv", header=0, index_col=0)
 df_var_1 = pd.read_csv("Results/variancesHomework_1.csv", header=0, index_col=0)
-#df_var_2 = pd.read_csv("Results/variancesHomework_2.csv", header=0, index_col=0) OSMOSIS
+#df_var_2 = pd.read_csv("Results/variancesHomework_2.csv", header=0, index_col=0) OSMOSIS not suitable
 df_var_3 = pd.read_csv("Results/variancesHomework_3.csv", header=0, index_col=0)
 
 df_variances = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)

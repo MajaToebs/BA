@@ -1,26 +1,31 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-
+import os
 
 
 # BOXPLOT
 # show all the boxplots of all documents' GFIs for chunk size m next to each other
-def plot_boxplot():
+def plot_boxplot(type):
     for m in [40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]: # setting m to a high number doesn't make sense for boxplots
         my_doc_chunk_m = df.loc[df['length_of_chunk'] == m]
-        my_doc_chunk_m.boxplot(column='GFI', by='document', figsize=(14,7))
-        plt.ylabel('GFI')
-        plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
-        plt.savefig('Plots/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
-
-
+        if len(my_doc_chunk_m) > 5:
+            my_doc_chunk_m.boxplot(column='GFI', by='document', figsize=(14,7), )
+            plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
+            plt.ylabel('GFI')
+            plt.xticks(rotation=90)
+            plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
 
 
 
 # BAR CHART
-def plot_barchart():
-    for homework in all_homeworks:
+def plot_barchart(type):
+    if type == "essays":
+        documents = all_essays
+    else:
+        documents = all_summaries
+
+    for homework in documents:
         for m in [20, 18, 16, 14, 12, 10]: # doesn't make sense with bigger m, since there is only one bar then
             plt.close('all')
             this_doc_len_m_ = df.loc[df['document'] == homework]
@@ -30,18 +35,23 @@ def plot_barchart():
             ints = []
             for i in this_doc_len_m['number_of_chunk']:
                 ints.append(int(i))
-            if len(ints) < 6:
+            if len(ints) < 5:
                 continue
             plt.bar(ints,this_doc_len_m['GFI'])
             plt.gcf().set_size_inches(7, 3.5)
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
-            plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
-            plt.savefig('Plots/homework/bar/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
+            plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
+            plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
 
 # SCATTER PLOT
-def plot_scatterplot():
-    for homework in all_homeworks:
+def plot_scatterplot(type):
+    if type == "essays":
+        documents = all_essays
+    else:
+        documents = all_summaries
+
+    for homework in documents:
         plt.close('all')
         this_doc = df.loc[df['document'] == homework]
 
@@ -65,12 +75,17 @@ def plot_scatterplot():
         plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', color='r')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
-        plt.savefig('Plots/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
+        plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
+        plt.savefig('Plots/German/assignments/' + type + '/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
+
+
+
+
 
 # VARIANCES
 # display variances of chunks
 # read in the variances from the file
-def plot_variances():
+def plot_variances(type):
     plt.close('all')
 
     # get the chunk sizes and their mean variances
@@ -91,13 +106,14 @@ def plot_variances():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.savefig('Plots/homework/variances.svg')
+    plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/German/assignments/' + type + '/variances.svg')
 
 
-# VARIANCES
-# display variances of chunks
-# read in the variances from the file
-def plot_deviations():
+
+# DEVIATIONS
+# display deviations of chunks
+def plot_deviations(type):
     plt.close('all')
 
     df_deviations = df_variances
@@ -120,63 +136,53 @@ def plot_deviations():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean deviations of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.savefig('Plots/homework/deviations.svg')
+    plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/German/assignments/' + type + '/deviations.svg')
 
 
 
-df_0 = pd.read_csv("Results/results_0.csv", header=0, index_col=0)
-df_1 = pd.read_csv("Results/results_1.csv", header=0, index_col=0)
-df_2 = pd.read_csv("Results/results_2.csv", header=0, index_col=0)
-df_3 = pd.read_csv("Results/results_3.csv", header=0, index_col=0)
 
-# concatenate the results of the separate folders with documents
-df = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
+
+
+# get the texts we want to analyze
+all_essays = []
+summaries_to_analyze = []
+# executes for all files in one directory
+for f in os.listdir("Data/German/essays/L1"):
+    all_essays.append("L1/"+f)
+df = pd.read_csv("Results/German/resultsEssays.csv", header=0, index_col=0)
 # look at the values of the definition with values of complexity 3 only
 df = df.loc[df['complexity'] == 3]
-
-df_var_0 = pd.read_csv("Results/variancesHomework_0.csv", header=0, index_col=0)
-df_var_1 = pd.read_csv("Results/variancesHomework_1.csv", header=0, index_col=0)
-#df_var_2 = pd.read_csv("Results/variancesHomework_2.csv", header=0, index_col=0) OSMOSIS
-df_var_3 = pd.read_csv("Results/variancesHomework_3.csv", header=0, index_col=0)
-
-df_variances = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
+df_variances = pd.read_csv("Results/German/variancesEssays.csv", header=0, index_col=0)
 # look at the values of the definition with values of complexity 3 only
 df_variances = df_variances.loc[df_variances['complexity']==3]
 
-all_homeworks = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/9534163.txt', 'aff-case/9534039.txt',
-                 'aff-case/9535872.txt', 'aff-case/9536689.txt', 'aff-case/9533580.txt', 'aff-case/9535758.txt',
-                 'aff-case/9536557.txt', 'aff-case/9534905.txt', 'aff-case/9534539.txt', 'aff-case/9534582.txt',
-                 'aff-case/9565310.txt', 'aff-case/9535669.txt', 'aff-case/9536591.txt', 'aff-case/9535696.txt',
-                 'aff-case/9531446.txt', 'aff-case/9535056.txt', 'aff-case/9526629.txt', 'aff-case/9532292.txt',
-                 'aff-case/9537480.txt', 'aff-case/9539821.txt', 'aff-case/9535252.txt', 'aff-case/9536298.txt',
-                 'aff-case/9540664.txt', 'aff-case/9534864.txt', 'aff-case/9526685.txt', 'aff-case/9535288.txt',
-                 'osmosis/124007948.txt', 'osmosis/124006337.txt', 'osmosis/124007677.txt', 'osmosis/124006584.txt',
-                 'osmosis/124009624.txt', 'osmosis/124007246.txt', 'osmosis/124006947.txt', 'osmosis/124009829.txt',
-                 'osmosis/124009088.txt', 'osmosis/123995860.txt', 'osmosis/124009461.txt', 'osmosis/124009486.txt',
-                 'osmosis/124007471.txt', 'osmosis/124006331.txt', 'osmosis/124007131.txt', 'osmosis/124012040.txt',
-                 'osmosis/124008444.txt', 'essays/122565974.txt', 'essays/122557523.txt', 'essays/122753914.txt',
-                 'essays/122543380.txt', 'essays/121118264.txt', 'essays/122543254.txt', 'essays/121118263.txt',
-                 'essays/122752875.txt', 'essays/122566014.txt', 'essays/122557146.txt', 'essays/122566103.txt',
-                 'essays/122566028.txt', 'essays/122544324.txt', 'essays/121155857.txt', 'essays/122569027.txt',
-                 'essays/122546705.txt', 'essays/122752406.txt', 'essays/122557093.txt', 'essays/122753520.txt',
-                 'essays/122543389.txt', 'essays/122546708.txt', 'essays/122577664.txt', 'essays/122568959.txt',
-                 'essays/121117570.txt', 'essays/121118273.txt', 'essays/122543379.txt', 'essays/122556190.txt',
-                 'essays/122556296.txt', 'essays/122753349.txt', 'mission-command/9465835.txt',
-                 'mission-command/9487595.txt', 'mission-command/9489831.txt', 'mission-command/9462586.txt',
-                 'mission-command/9489875.txt', 'mission-command/9481043.txt', 'mission-command/9462411.txt',
-                 'mission-command/9461712.txt', 'mission-command/9490023.txt', 'mission-command/9462406.txt',
-                 'mission-command/9474049.txt', 'mission-command/9489856.txt', 'mission-command/9478109.txt',
-                 'mission-command/9487780.txt', 'mission-command/9487828.txt', 'mission-command/9462342.txt',
-                 'mission-command/9466829.txt', 'mission-command/9489859.txt', 'mission-command/9481116.txt',
-                 'mission-command/9489866.txt', 'mission-command/9463242.txt', 'mission-command/9489815.txt',
-                 'mission-command/9487536.txt', 'mission-command/10145044.txt', 'mission-command/9461991.txt',
-                 'mission-command/9489819.txt', 'mission-command/9461911.txt', 'mission-command/9489857.txt',
-                 'mission-command/9490214.txt', 'mission-command/9489842.txt']
+print("start plotting essays")
+plot_boxplot("essays")
+plot_barchart("essays")
+plot_scatterplot("essays")
+plot_variances("essays")
+plot_deviations("essays")
 
-plot_boxplot()
-plot_barchart()
-plot_scatterplot()
-plot_variances()
-plot_deviations()
+plt.close('all')
+
+
+
+all_summaries = []
+for f in os.listdir("Data/German/essays/summaryL1"):
+    all_summaries.append("summaryL1/"+f)
+df = pd.read_csv("Results/German/resultsSummaries.csv", header=0, index_col=0)
+# look at the values of the definition with values of complexity 3 only
+df = df.loc[df['complexity'] == 3]
+df_variances = pd.read_csv("Results/German/variancesSummaries.csv", header=0, index_col=0)
+# look at the values of the definition with values of complexity 3 only
+df_variances = df_variances.loc[df_variances['complexity']==3]
+
+print("start plotting summaries")
+plot_boxplot("summaries")
+plot_barchart("summaries")
+plot_scatterplot("summaries")
+plot_variances("summaries")
+plot_deviations("summaries")
 
 plt.close('all')

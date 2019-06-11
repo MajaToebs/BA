@@ -10,8 +10,9 @@ def plot_boxplots():
     for m in [1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 75, 50, 40, 30, 20, 10]:
         my_doc_chunk_m = df.loc[df['length_of_chunk'] == m]
         my_doc_chunk_m.boxplot(column='GFI', by='document', figsize=(14,7))
+        plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
         plt.ylabel('GFI')
-        plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
+        plt.xticks(rotation=90)
         plt.savefig('Plots/German/theses/box/' + str(m) + 'longChunksBoxplottedAllTheses.svg')
 
 
@@ -30,7 +31,7 @@ def plot_barcharts():
             plt.gcf().set_size_inches(7, 3.5)
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
-            plt.figtext(0.995, 0.01, 'the chunk size is ' + str(m), ha='right', va='bottom')
+            plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + thesis, fontsize=14)
             plt.savefig('Plots/German/theses/bar/' + str(m) + "_long_" + thesis + 'indicesOverNumberOfChunk.svg')
 
 
@@ -56,7 +57,10 @@ def plot_scatterplot():
         plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', color='r')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
+        plt.suptitle('GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
         plt.savefig('Plots/German/theses/scatter/' + thesis + 'indicesOverChunkSize.svg')
+
+
 
 # VARIANCES
 # display variances of chunks
@@ -83,11 +87,13 @@ def plot_variances():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
+    plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
     plt.savefig('Plots/German/theses/variancesOnChunkSize.svg')
+
+
 
 # DEVIATIONS
 # display standard deviations of chunks
-# read in the deviations from the file
 def plot_deviations():
     plt.close('all')
     df_deviations = df_variances
@@ -111,6 +117,7 @@ def plot_deviations():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('standard deviation of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
+    plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
     plt.savefig('Plots/German/theses/deviationsOnChunkSize.svg')
 
 
