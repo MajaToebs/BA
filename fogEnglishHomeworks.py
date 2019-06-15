@@ -65,8 +65,10 @@ def count_syllables(word):
     # necessary for the syllable count
     dic = Pyphen(lang='en_EN')
     word_hyphenated = dic.inserted(word)
-    count = max(1, word_hyphenated.count("-") + 1)
-    return count
+    # triple hyphens resulting from hyphens inside the normal word need to be reduced to single hyphens
+    word_hyphenated = word_hyphenated.replace("---", "-")
+    syllables = max(1, word_hyphenated.count("-") + 1)
+    return syllables
 
 
 # get complex words out of all words
