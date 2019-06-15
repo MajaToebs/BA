@@ -6,7 +6,7 @@ import numpy as np
 
 # BOXPLOT
 # show all the boxplots of all documents' GFIs for chunk size m next to each other
-def plot_boxplot():
+def plot_boxplot(df):
     for m in [40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]: # setting m to a high number doesn't make sense for boxplots
         my_doc_chunk_m = df.loc[df['length_of_chunk'] == m]
         if len(my_doc_chunk_m) > 5:
@@ -14,7 +14,7 @@ def plot_boxplot():
             plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
             plt.ylabel('GFI')
             plt.xticks(rotation=90)
-            plt.savefig('Plots/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
+            plt.savefig('Plots/English/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
 
 
 
@@ -39,7 +39,7 @@ def plot_barchart():
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
             plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
-            plt.savefig('Plots/homework/bar/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
+            plt.savefig('Plots/English/homework/bar/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
 
 # SCATTER PLOT
 def plot_scatterplot():
@@ -68,7 +68,7 @@ def plot_scatterplot():
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
         plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
-        plt.savefig('Plots/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
+        plt.savefig('Plots/English/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
 
 # VARIANCES
 # display variances of chunks
@@ -95,7 +95,7 @@ def plot_variances():
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
     plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/homework/variances.svg')
+    plt.savefig('Plots/English/homework/variances.svg')
 
 
 # DEVIATIONS
@@ -124,28 +124,62 @@ def plot_deviations():
     plt.ylabel('mean deviations of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
     plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/homework/deviations.svg')
+    plt.savefig('Plots/English/homework/deviations.svg')
 
 
 
-df_0 = pd.read_csv("Results/results_0.csv", header=0, index_col=0)
-df_1 = pd.read_csv("Results/results_1.csv", header=0, index_col=0)
-df_2 = pd.read_csv("Results/results_2.csv", header=0, index_col=0)
-df_3 = pd.read_csv("Results/results_3.csv", header=0, index_col=0)
+df_0 = pd.read_csv("Results/English/results_0.csv", header=0, index_col=0)
+df_1 = pd.read_csv("Results/English/results_1.csv", header=0, index_col=0)
+df_2 = pd.read_csv("Results/English/results_2.csv", header=0, index_col=0)
+df_3 = pd.read_csv("Results/English/results_3.csv", header=0, index_col=0)
 
 # concatenate the results of the separate folders with documents
 df = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
 # look at the values of the definition with values of complexity 3 only
 df = df.loc[df['complexity'] == 3]
 
-df_var_0 = pd.read_csv("Results/variancesHomework_0.csv", header=0, index_col=0)
-df_var_1 = pd.read_csv("Results/variancesHomework_1.csv", header=0, index_col=0)
+df_var_0 = pd.read_csv("Results/English/variancesHomework_0.csv", header=0, index_col=0)
+df_var_1 = pd.read_csv("Results/English/variancesHomework_1.csv", header=0, index_col=0)
 #df_var_2 = pd.read_csv("Results/variancesHomework_2.csv", header=0, index_col=0) OSMOSIS not suitable
-df_var_3 = pd.read_csv("Results/variancesHomework_3.csv", header=0, index_col=0)
+df_var_3 = pd.read_csv("Results/English/variancesHomework_3.csv", header=0, index_col=0)
 
 df_variances = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
 # look at the values of the definition with values of complexity 3 only
 df_variances = df_variances.loc[df_variances['complexity']==3]
+
+all_affs = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/9534163.txt', 'aff-case/9534039.txt',
+                 'aff-case/9535872.txt', 'aff-case/9536689.txt', 'aff-case/9533580.txt', 'aff-case/9535758.txt',
+                 'aff-case/9536557.txt', 'aff-case/9534905.txt', 'aff-case/9534539.txt', 'aff-case/9534582.txt',
+                 'aff-case/9565310.txt', 'aff-case/9535669.txt', 'aff-case/9536591.txt', 'aff-case/9535696.txt',
+                 'aff-case/9531446.txt', 'aff-case/9535056.txt', 'aff-case/9526629.txt', 'aff-case/9532292.txt',
+                 'aff-case/9537480.txt', 'aff-case/9539821.txt', 'aff-case/9535252.txt', 'aff-case/9536298.txt',
+                 'aff-case/9540664.txt', 'aff-case/9534864.txt', 'aff-case/9526685.txt', 'aff-case/9535288.txt']
+
+all_osmosis = ['osmosis/124007948.txt', 'osmosis/124006337.txt', 'osmosis/124007677.txt', 'osmosis/124006584.txt',
+                 'osmosis/124009624.txt', 'osmosis/124007246.txt', 'osmosis/124006947.txt', 'osmosis/124009829.txt',
+                 'osmosis/124009088.txt', 'osmosis/123995860.txt', 'osmosis/124009461.txt', 'osmosis/124009486.txt',
+                 'osmosis/124007471.txt', 'osmosis/124006331.txt', 'osmosis/124007131.txt', 'osmosis/124012040.txt',
+                 'osmosis/124008444.txt']
+
+all_missions = ['mission-command/9465835.txt', 'mission-command/9489831.txt', 'mission-command/9462586.txt',
+                 'mission-command/9489875.txt', 'mission-command/9481043.txt', 'mission-command/9462411.txt',
+                 'mission-command/9461712.txt', 'mission-command/9490023.txt', 'mission-command/9462406.txt',
+                 'mission-command/9474049.txt', 'mission-command/9489856.txt', 'mission-command/9478109.txt',
+                 'mission-command/9487780.txt', 'mission-command/9487828.txt', 'mission-command/9462342.txt',
+                 'mission-command/9466829.txt', 'mission-command/9489859.txt', 'mission-command/9481116.txt',
+                 'mission-command/9489866.txt', 'mission-command/9463242.txt', 'mission-command/9489815.txt',
+                 'mission-command/9487536.txt', 'mission-command/10145044.txt', 'mission-command/9461991.txt',
+                 'mission-command/9489819.txt', 'mission-command/9461911.txt', 'mission-command/9489857.txt',
+                 'mission-command/9490214.txt', 'mission-command/9489842.txt', 'mission-command/9487595.txt']
+
+all_essays = ['essays/122565974.txt', 'essays/122557523.txt', 'essays/122753914.txt',
+                 'essays/122543380.txt', 'essays/121118264.txt', 'essays/122543254.txt', 'essays/121118263.txt',
+                 'essays/122752875.txt', 'essays/122566014.txt', 'essays/122557146.txt', 'essays/122566103.txt',
+                 'essays/122566028.txt', 'essays/122544324.txt', 'essays/121155857.txt', 'essays/122569027.txt',
+                 'essays/122546705.txt', 'essays/122752406.txt', 'essays/122557093.txt', 'essays/122753520.txt',
+                 'essays/122543389.txt', 'essays/122546708.txt', 'essays/122577664.txt', 'essays/122568959.txt',
+                 'essays/121117570.txt', 'essays/121118273.txt', 'essays/122543379.txt', 'essays/122556190.txt',
+                 'essays/122556296.txt', 'essays/122753349.txt']
 
 all_homeworks = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/9534163.txt', 'aff-case/9534039.txt',
                  'aff-case/9535872.txt', 'aff-case/9536689.txt', 'aff-case/9533580.txt', 'aff-case/9535758.txt',
@@ -177,7 +211,10 @@ all_homeworks = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/95341
                  'mission-command/9489819.txt', 'mission-command/9461911.txt', 'mission-command/9489857.txt',
                  'mission-command/9490214.txt', 'mission-command/9489842.txt']
 
-plot_boxplot()
+#df_now = df.loc[df['document'].str.startswith('osmosis')]
+plot_boxplot(df)
+
+
 plot_barchart()
 plot_scatterplot()
 plot_variances()

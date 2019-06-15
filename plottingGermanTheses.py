@@ -128,10 +128,10 @@ df = df.loc[df["complexity"]==3]
 df_variances = pd.read_csv("Results/German/variancesTheses.csv", header=0, index_col=0)
 df_variances = df_variances.loc[df_variances["complexity"]==3]
 
-all_theses = ['de122603393.txt', 'de123666862.txt', 'de118124834.txt', 'de116971348.txt', 'de113804971.txt',
+all_theses = ['de122603393.txt', 'de123666862.txt', 'de116971348.txt', 'de113804971.txt',
               'de115685280.txt', 'de118611757.txt', 'de120662601.txt', 'de118628474.txt', 'de117909802.txt',
-              'de118653524.txt', 'de124313811.txt', 'de122223299.txt', 'de11157308.txt', 'de11006290.txt',
-              'de117710690.txt', 'de11109527.txt', 'de120500224.txt', 'de115078652.txt', 'de124051169.txt',
+              'de118653524.txt', 'de124313811.txt', 'de122223299.txt', 'de11006290.txt',
+              'de117710690.txt', 'de120500224.txt', 'de115078652.txt', 'de124051169.txt',
               'de115639573.txt', 'de115101969.txt', 'de119427502.txt', 'de118043324.txt', 'de120960357.txt',
               'de118627493.txt', 'de122449695.txt', 'de123748878.txt', 'de118577040.txt', 'de123255864.txt']
 

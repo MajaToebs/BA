@@ -13,7 +13,7 @@ def plot_boxplots():
         plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
         plt.ylabel('GFI')
         plt.xticks(rotation=90)
-        plt.savefig('Plots/thesis/boxplot/' + str(m) + 'longChunksBoxplottedAllTheses.svg')
+        plt.savefig('Plots/English/theses/boxplot/' + str(m) + 'longChunksBoxplottedAllTheses.svg')
 
 
 # BAR CHART
@@ -32,7 +32,7 @@ def plot_barcharts():
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
             plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + thesis, fontsize=14)
-            plt.savefig('Plots/thesis/bar/' + str(m) + "_long_" + thesis + 'indicesOverNumberOfChunk.svg')
+            plt.savefig('Plots/English/theses/bar/' + str(m) + "_long_" + thesis + 'indicesOverNumberOfChunk.svg')
 
 
 # SCATTER PLOT
@@ -58,7 +58,7 @@ def plot_scatterplot():
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
         plt.suptitle('GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
-        plt.savefig('Plots/thesis/scatter/' + thesis + 'indicesOverChunkSize.svg')
+        plt.savefig('Plots/English/theses/scatter/' + thesis + 'indicesOverChunkSize.svg')
 
 
 
@@ -88,7 +88,7 @@ def plot_variances():
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
     plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/thesis/variancesOnChunkSize.svg')
+    plt.savefig('Plots/English/theses/variancesOnChunkSize.svg')
 
 # DEVIATIONS
 # display standard deviations of chunks
@@ -116,7 +116,7 @@ def plot_deviations():
     plt.ylabel('standard deviation of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
     plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/thesis/deviationsOnChunkSize.svg')
+    plt.savefig('Plots/English/theses/deviationsOnChunkSize.svg')
 
 
 
