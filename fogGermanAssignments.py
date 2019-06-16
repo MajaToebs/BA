@@ -22,7 +22,7 @@ import nltk
 # import the word tokenizer from nltk
 from nltk.tokenize import word_tokenize
 
-# to find out whether a word contains only alphabetic characters (works only with english texts, since äöü are not included)
+# to find out whether a word contains only alphabetic characters (äöü are not included)
 from string import ascii_letters
 
 # for hyphenation
@@ -38,9 +38,10 @@ def word_tokenizing(text):
     # tokenize words and filter out punctuations, numbers etc (non-alpha)
     tokenized_words = word_tokenize(text)
     only_alpha_words = []
+    allowed_chars = ascii_letters + "äöüÄÖÜß-"
     for word in tokenized_words:
         word = word.lower()
-        if all(c in ascii_letters + '-' for c in word):
+        if all(c in allowed_chars for c in word):
             only_alpha_words.append(word)
     tokenized_words = only_alpha_words
     return tokenized_words
