@@ -112,7 +112,7 @@ all_theses = ['en114417450.txt', 'en119716549.txt', 'en119767323.txt', 'en116249
               'en115002482.txt', 'en117652377.txt', 'en117661421.txt']
 
 
-#plot_scatterplot()
+plot_scatterplot()
 plot_deviations()
 
 plt.close('all')

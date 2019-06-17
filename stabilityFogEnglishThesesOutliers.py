@@ -98,16 +98,19 @@ def get_complex_words(words, complexity):
 
 def analyse(i, sentences, tokenizer, complexity):
     tokenized_words = []
-    long_sentence_count = 0
+    strange_sentence_count = 0
     for sent in sentences:
         words = word_tokenizing(sent, tokenizer)
-        if len(words) <= 30:
+        if len(words) <= 30 and len(words) >= 5:
             tokenized_words.extend(words)
         else:
-            long_sentence_count += 1
+            strange_sentence_count += 1
 
     # Determine average sentence length
-    average_sentence_length = len(tokenized_words) / (len(sentences) - long_sentence_count)
+    if len(sentences) == strange_sentence_count:
+        return 1133
+    else:
+        average_sentence_length = len(tokenized_words) / (len(sentences) - strange_sentence_count)
 
     diff_words_set = get_complex_words(tokenized_words, complexity)
 
@@ -140,14 +143,22 @@ def process (f, c, x):
     # analyse the whole text as one chunk, if 0 is given as sentences_per_chunk or sentences_per_chunk is bigger than the document
     if sentences_per_chunk == 0 or sentences_per_chunk > len(sentences):
         sentences_per_chunk = len(sentences)
-        fog_indices.append(analyse(0, sentences, tokenizer, complexity))
+        fog = analyse(0, sentences, tokenizer, complexity)
+        if fog == 1133:
+            pass
+        else:
+            fog_indices.append(fog)
     # the user wants to analyse chunks of a given length
     else:
         n = len(sentences)/sentences_per_chunk
         for i in range(1, int(n+1)):
             chunk_i = sentences[(i-1)*sentences_per_chunk:i*sentences_per_chunk]
-            fog_indices.append(analyse(i, chunk_i, tokenizer, complexity))
-            # calculate the variances of GFIs of this document for this chunk size
+            fog = analyse(0, chunk_i, tokenizer, complexity)
+            if fog == 1133:
+                pass
+            else:
+                fog_indices.append(fog)
+        # calculate the variances of GFIs of this document for this chunk size
         variances['length_of_chunk'].append(str(sentences_per_chunk))
         variances['complexity'].append(complexity)
         variances['variance'].append(np.var(fog_indices))
