@@ -1,7 +1,7 @@
 # BA
 Python code of my bachelor thesis on readability measures (mostly the Gunning Fog Index) for intrinsic plagiarism analysis
 
-Plots of the results are available as well
+The resulting figures and plots of them are available as well
 
 ## Required Packages
 - Textstat
