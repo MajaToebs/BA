@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+colors_list = list(colors._colors_full_map.values())
 
 
 
@@ -34,6 +36,29 @@ def plot_barcharts():
             plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + thesis, fontsize=14)
             plt.savefig('Plots/English/theses/bar/' + str(m) + "_long_" + thesis + 'indicesOverNumberOfChunk.svg')
 
+# STRUCTURE CHART
+def plot_structure():
+    for m in [100, 75, 50, 40, 30, 20, 10]:
+        plt.close('all')
+        rel_chunks = df.loc[df['length_of_chunk']==m]
+        for c, thesis in enumerate(all_theses[0:5]):
+            this_doc_len_m = rel_chunks.loc[rel_chunks['document']==thesis]
+            if this_doc_len_m.empty == True:
+                continue
+            ints = []
+            max_number_of_this_chunk = np.max(this_doc_len_m['number_of_chunk'])
+            for i in this_doc_len_m['number_of_chunk']:
+                # transform the chunk number into a percentage of how far in the document this chunk is
+                ints.append(100 * int(i) / max_number_of_this_chunk)
+            plt.plot(ints, this_doc_len_m['GFI'], '-o', color = colors_list[c])
+
+        # when the lines of all theses are there, we can combine them in one plot and store it
+        plt.gcf().set_size_inches(14, 7)
+        plt.ylabel('GFI')
+        plt.xlabel("document's percentage of the chunk's end")
+        plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document', fontsize=14)
+        plt.savefig('Plots/English/theses/structure/all' + str(m) + '_long_indicesOverNumberOfChunk.svg')
+
 
 # SCATTER PLOT
 def plot_scatterplot():
@@ -59,6 +84,20 @@ def plot_scatterplot():
         plt.xlabel('length of chunk in sentences')
         plt.suptitle('GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
         plt.savefig('Plots/English/theses/scatter/' + thesis + 'indicesOverChunkSize.svg')
+
+# DISTRIBUTION PLOT
+def plot_distribution():
+    for m in [100, 75, 50, 40, 30, 20, 10]:
+        plt.close('all')
+        df_of_len = df.loc[df['length_of_chunk']==m]
+        for c, thesis in enumerate(all_theses[3:6]):
+            this_doc_of_len = df_of_len.loc[df_of_len["document"]==thesis]
+            plt.hist(this_doc_of_len['GFI'], density = True, bins = np.arange(0,45), color = colors_list[c+72], histtype="step")
+        plt.gcf().set_size_inches(14, 7)
+        plt.ylabel('probability')
+        plt.xlabel('GFI')
+        plt.suptitle('distribution of GFI values of size ' + str(m) + ' of all theses', fontsize=14)
+        plt.savefig('Plots/English/theses/distribution/' + str(m) + '.svg')
 
 
 
@@ -130,10 +169,12 @@ all_theses = ['en114417450.txt', 'en119716549.txt', 'en119767323.txt', 'en116249
               'en115002482.txt', 'en117652377.txt', 'en117661421.txt']
 
 plot_boxplots()
-plot_barcharts()
-plot_scatterplot()
-plot_variances()
-plot_deviations()
+#plot_barcharts()
+#plot_scatterplot()
+#plot_variances()
+#plot_deviations()
+#plot_structure()
+#plot_distribution()
 
 plt.close('all')
 

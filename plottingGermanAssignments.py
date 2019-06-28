@@ -2,6 +2,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import matplotlib.colors as colors
+colors_list = list(colors._colors_full_map.values())
 
 
 # BOXPLOT
@@ -44,6 +46,38 @@ def plot_barchart(type):
             plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
             plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
 
+# STRUCTURE CHART
+def plot_structure(type):
+    for m in [100, 75, 50, 40, 30, 20, 10]:
+        plt.close('all')
+        rel_chunks = df.loc[df['length_of_chunk']==m]
+        colors = []
+        if type == "essays":
+            all_docs = all_essays
+        else:
+            all_docs = all_summaries
+        for c, thesis in enumerate(all_docs[0:13]):
+            this_doc_len_m = rel_chunks.loc[rel_chunks['document']==thesis]
+            if this_doc_len_m.empty == True:
+                continue
+            ints = []
+            max_number_of_this_chunk = np.max(this_doc_len_m['number_of_chunk'])
+            for i in this_doc_len_m['number_of_chunk']:
+                # transform the chunk number into a percentage of how far in the document this chunk is
+                ints.append(100 * int(i) / max_number_of_this_chunk)
+            # have to apend color as well?!
+            for i in range(len(ints)):
+                colors.append(colors_list[c])
+            plt.plot(ints, this_doc_len_m['GFI'], '-o', color = colors_list[c])
+
+        # when the lines of all theses are there, we can combine them in one plot and store it
+        plt.gcf().set_size_inches(14, 7)
+        plt.ylabel('GFI')
+        plt.xlabel("document's percentage of the chunk's end")
+        plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document', fontsize=14)
+        plt.savefig('Plots/German/assignments/' + type + '/structure/all' + str(m) + '_long_indicesOverNumberOfChunk.svg')
+
+
 # SCATTER PLOT
 def plot_scatterplot(type):
     if type == "essays":
@@ -78,6 +112,25 @@ def plot_scatterplot(type):
         plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
         plt.savefig('Plots/German/assignments/' + type + '/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
 
+
+# DISTRIBUTION PLOT
+def plot_distribution(type):
+    for m in [100, 75, 50, 40, 30, 20, 10]:
+        plt.close('all')
+        df_of_len = df.loc[df['length_of_chunk']==m]
+        if type == "essays":
+            all_docs = all_essays
+        else:
+            all_docs = all_summaries
+
+        for c, thesis in enumerate(all_docs[4:13]):
+            this_doc_of_len = df_of_len.loc[df_of_len["document"]==thesis]
+            plt.hist(this_doc_of_len['GFI'], density = True, bins = np.arange(5,20), color = colors_list[c+72], histtype="step")
+        plt.gcf().set_size_inches(14, 7)
+        plt.ylabel('probability')
+        plt.xlabel('GFI')
+        plt.suptitle('distribution of GFI values of size ' + str(m) + ' of all homeworks', fontsize=14)
+        plt.savefig('Plots/German/assignments/' + type + '/distribution/' + str(m) + '.svg')
 
 
 
@@ -158,11 +211,13 @@ df_variances = pd.read_csv("Results/German/variancesEssays.csv", header=0, index
 df_variances = df_variances.loc[df_variances['complexity']==3]
 
 print("start plotting essays")
-plot_boxplot("essays")
-plot_barchart("essays")
-plot_scatterplot("essays")
-plot_variances("essays")
-plot_deviations("essays")
+#plot_boxplot("essays")
+#plot_barchart("essays")
+#plot_scatterplot("essays")
+#plot_variances("essays")
+#plot_deviations("essays")
+#plot_structure("essays")
+plot_distribution("essays")
 
 plt.close('all')
 
@@ -179,10 +234,12 @@ df_variances = pd.read_csv("Results/German/variancesSummaries.csv", header=0, in
 df_variances = df_variances.loc[df_variances['complexity']==3]
 
 print("start plotting summaries")
-plot_boxplot("summaries")
-plot_barchart("summaries")
-plot_scatterplot("summaries")
-plot_variances("summaries")
-plot_deviations("summaries")
+#plot_boxplot("summaries")
+#plot_barchart("summaries")
+#plot_scatterplot("summaries")
+#plot_variances("summaries")
+#plot_deviations("summaries")
+#plot_structure("summaries")
+plot_distribution("summaries")
 
 plt.close('all')
