@@ -1,32 +1,7 @@
 import pandas as pd
 import os
 import numpy as np
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-colors_list = list(colors._colors_full_map.values())
 
-# BOXPLOT
-# show all the boxplots of all documents' GFIs for chunk size m next to each other
-def plot_boxplots():
-    for m in [50, 40, 30, 20, 10]:
-        #fig, ax = plt.subplots()
-
-        df_m = df.loc[df_theses_en['length_of_chunk'] == m]
-        df_m.boxplot(column='GFI', by='document', figsize=(14,7), vert = False)
-
-        #thesis_de = df_theses_de.loc[df_theses_de['length_of_chunk'] == m].loc[df_theses_de["document"]=='de124313811.txt']
-        #thesis_de.boxplot(column='GFI', by='document', figsize=(14,7), ax = ax, vert = False)
-
-        #mission_en = df_missions_en.loc[df_missions_en['length_of_chunk'] == m].loc[df_missions_en["document"]=='mission-command/9461991.txt']
-        #mission_en.boxplot(column='GFI', by='document', figsize=(14,7), ax = ax, vert = False)
-
-        #essay_de = df_essays_de.loc[df_essays_de['length_of_chunk'] == m].loc[df_essays_de["document"]=='L1/dew15_2007_09.txt']
-        #essay_de.boxplot(column='GFI', by='document', figsize=(14,7), ax = ax, vert = False)
-
-        plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
-        plt.ylabel('GFI')
-        plt.xticks(rotation=90)
-        plt.savefig('Plots/comparison/boxplot/' + str(m) + 'longChunks.svg')
 
 # prepare English theses
 df_theses_en = pd.read_csv("Results/English/resultsTheses.csv", header=0, index_col=0)
@@ -35,8 +10,6 @@ df_theses_en = df_theses_en.loc[df_theses_en["complexity"]==3]
 variances_theses_en = pd.read_csv("Results/English/variancesTheses.csv", header=0, index_col=0)
 variances_theses_en = variances_theses_en.loc[variances_theses_en["complexity"]==3]
 
-all_theses_en = ['en114417450.txt', 'en119716549.txt', 'en119767323.txt', 'en116249615.txt',
-              'en115002482.txt', 'en117652377.txt', 'en117661421.txt']
 
 # prepare German theses
 df_theses_de = pd.read_csv("Results/German/resultsTheses.csv", header=0, index_col=0)
@@ -45,66 +18,147 @@ df_theses_de = df_theses_de.loc[df_theses_de["complexity"]==3]
 variances_theses_de = pd.read_csv("Results/German/variancesTheses.csv", header=0, index_col=0)
 variances_theses_de = variances_theses_de.loc[variances_theses_de["complexity"]==3]
 
-all_theses_de = ['de122603393.txt', 'de123666862.txt', 'de116971348.txt', 'de113804971.txt',
-              'de115685280.txt', 'de118611757.txt', 'de120662601.txt', 'de118628474.txt', 'de117909802.txt',
-              'de118653524.txt', 'de124313811.txt', 'de122223299.txt', 'de11006290.txt',
-              'de117710690.txt', 'de120500224.txt', 'de115078652.txt', 'de124051169.txt',
-              'de115639573.txt', 'de115101969.txt', 'de119427502.txt', 'de118043324.txt', 'de120960357.txt',
-              'de118627493.txt', 'de122449695.txt', 'de123748878.txt', 'de118577040.txt', 'de123255864.txt']
 
-# prepare English mission documents
-df_missions_en = pd.read_csv("Results/English/results_3.csv", header=0, index_col=0)
-df_missions_en = df_missions_en.loc[df_missions_en["complexity"]==3]
-
-variances_missions_en = pd.read_csv("Results/English/variancesHomework_3.csv", header=0, index_col=0)
-variances_missions_en = variances_missions_en.loc[variances_missions_en["complexity"]==3]
-
-all_missions = ['mission-command/9465835.txt', 'mission-command/9489831.txt', 'mission-command/9462586.txt',
-                 'mission-command/9489875.txt', 'mission-command/9481043.txt', 'mission-command/9462411.txt',
-                 'mission-command/9461712.txt', 'mission-command/9490023.txt', 'mission-command/9462406.txt',
-                 'mission-command/9474049.txt', 'mission-command/9489856.txt', 'mission-command/9478109.txt',
-                 'mission-command/9487780.txt', 'mission-command/9487828.txt', 'mission-command/9462342.txt',
-                 'mission-command/9466829.txt', 'mission-command/9489859.txt', 'mission-command/9481116.txt',
-                 'mission-command/9489866.txt', 'mission-command/9463242.txt', 'mission-command/9489815.txt',
-                 'mission-command/9487536.txt', 'mission-command/10145044.txt', 'mission-command/9461991.txt',
-                 'mission-command/9489819.txt', 'mission-command/9461911.txt', 'mission-command/9489857.txt',
-                 'mission-command/9490214.txt', 'mission-command/9489842.txt', 'mission-command/9487595.txt']
-
-# prepare German essays
-df_essays_de = pd.read_csv("Results/German/resultsEssays.csv", header=0, index_col=0)
-df_essays_de = df_essays_de.loc[df_essays_de['complexity'] == 3]
-
-variances_essays_de = pd.read_csv("Results/German/variancesEssays.csv", header=0, index_col=0)
-variances_essays_de = variances_essays_de.loc[variances_essays_de['complexity']==3]
-
-all_essays = []
-for f in os.listdir("Data/German/essays/L1"):
-    all_essays.append("L1/"+f)
+# prepare English homework documents
+df_0 = pd.read_csv("Results/English/results_0.csv", header=0, index_col=0)
+df_1 = pd.read_csv("Results/English/results_1.csv", header=0, index_col=0)
+df_2 = pd.read_csv("Results/English/results_2.csv", header=0, index_col=0)
+df_3 = pd.read_csv("Results/English/results_3.csv", header=0, index_col=0)
+# concatenate the results of the separate folders with documents
+df_homeworks_en = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
+# look at the values of the definition with values of complexity 3 only
+df_homeworks_en = df_homeworks_en.loc[df_homeworks_en['complexity'] == 3]
+df_var_0 = pd.read_csv("Results/English/variancesHomework_0.csv", header=0, index_col=0)
+df_var_1 = pd.read_csv("Results/English/variancesHomework_1.csv", header=0, index_col=0)
+df_var_2 = pd.read_csv("Results/English/variancesHomework_2.csv", header=0, index_col=0)
+df_var_3 = pd.read_csv("Results/English/variancesHomework_3.csv", header=0, index_col=0)
+variances_homeworks_en = pd.concat([df_var_0, df_var_1, df_var_3], ignore_index=True)
+# look at the values of the definition with values of complexity 3 only
+variances_homeworks_en = variances_homeworks_en.loc[variances_homeworks_en['complexity']==3]
 
 
+# prepare German assignments
+essays_de = pd.read_csv("Results/German/resultsEssays.csv", header=0, index_col=0)
+summaries_de = pd.read_csv("Results/German/resultsSummaries.csv", header=0, index_col=0)
+df_homeworks_de = pd.concat([essays_de, summaries_de], ignore_index=True)
+df_homeworks_de = df_homeworks_de.loc[df_homeworks_de['complexity'] == 3]
 
-# put some suitable ones together
-max_name = df_theses_en[df_theses_en['length_of_chunk']==df_theses_en['length_of_chunk'].max()]['document']
-
-#maximum = df_theses_en.loc[df_theses_en["length_of_chunk"].idxmax()]
-#print(maximum)
-#maximum_name = df_theses_en[maximum]["document"]
-print(max_name)
-df_0 = df_theses_en.loc[df_theses_en["document"] == max_name[1]]
-print(df_0)
+var_essays_de = pd.read_csv("Results/German/variancesEssays.csv", header=0, index_col=0)
+var_summaries_de = pd.read_csv("Results/German/variancesSummaries.csv", header=0, index_col=0)
+variances_homeworks_de = pd.concat([var_essays_de, var_summaries_de], ignore_index=True)
+variances_homeworks_de = variances_homeworks_de.loc[variances_homeworks_de['complexity']==3]
 
 
-maximum_name = df_theses_de["length_of_chunk"]==np.max(df_theses_de["length_of_chunk"])["document"]
-df_1 = df_theses_de.loc[df_theses_de["document"] == maximum_name]
+statistics = {
+    "type" : [],
+    "number" : [],
+    "chunk_size" : [],
+    "mean_GFI" : [],
+    "median_GFI" : [],
+    "mean_std" : [],
+    "max_len" : []
+}
 
-maximum_name = df_missions_en["length_of_chunk"]==np.max(df_missions_en["length_of_chunk"])["document"]
-df_2 = df_missions_en.loc[df_missions_en["document"] == maximum_name]
+for m in [0, 100, 30, 10]:
+    # zero means that all values are averaged independent of their chunk size
+    if m == 0:
+        # compute values for English theses
+        statistics["chunk_size"].append(0)
+        statistics["type"].append("English theses")
+        statistics["number"].append(len(set(df_theses_en["document"])))
+        statistics["mean_GFI"].append(np.mean(df_theses_en["GFI"]))
+        statistics["median_GFI"].append(np.median(df_theses_en["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_theses_en["std"]))
+        statistics["max_len"].append(np.max(df_theses_en["length_of_chunk"]))
 
-maximum_name = df_essays_de["length_of_chunk"]==np.max(df_essays_de["length_of_chunk"])["document"]
-df_3 = df_essays_de.loc[df_essays_de["document"] == maximum_name]
+        # compute values for German theses
+        statistics["chunk_size"].append(0)
+        statistics["type"].append("German theses")
+        statistics["number"].append(len(set(df_theses_de["document"])))
+        statistics["mean_GFI"].append(np.mean(df_theses_de["GFI"]))
+        statistics["median_GFI"].append(np.median(df_theses_de["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_theses_de["std"]))
+        statistics["max_len"].append(np.max(df_theses_de["length_of_chunk"]))
 
-df = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
+        # compute values for English homeworks
+        statistics["chunk_size"].append(0)
+        statistics["type"].append("English homeworks")
+        statistics["number"].append(len(set(df_homeworks_en["document"])))
+        statistics["mean_GFI"].append(np.mean(df_homeworks_en["GFI"]))
+        statistics["median_GFI"].append(np.median(df_homeworks_en["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_homeworks_en["std"]))
+        statistics["max_len"].append(np.max(df_homeworks_en["length_of_chunk"]))
 
-plot_boxplots()
+        # compute values for German assignments
+        statistics["chunk_size"].append(0)
+        statistics["type"].append("German assignments")
+        statistics["number"].append(len(set(df_homeworks_de["document"])))
+        statistics["mean_GFI"].append(np.mean(df_homeworks_de["GFI"]))
+        statistics["median_GFI"].append(np.median(df_homeworks_de["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_homeworks_de["std"]))
+        statistics["max_len"].append(np.max(df_homeworks_de["length_of_chunk"]))
 
-plt.close("all")
+    # else m is the chunk size whose values are averaged
+    else:
+        # compute values for English theses
+        statistics["chunk_size"].append(m)
+        statistics["type"].append("English theses")
+        statistics["number"].append(len(set(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["document"])))
+        statistics["mean_GFI"].append(np.mean(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["GFI"]))
+        statistics["median_GFI"].append(np.median(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_theses_en.loc[variances_theses_en["length_of_chunk"]==m]["std"]))
+        statistics["max_len"].append(np.max(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["length_of_chunk"]))
+
+        # compute values for German theses
+        statistics["chunk_size"].append(m)
+        statistics["type"].append("German theses")
+        statistics["number"].append(len(set(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["document"])))
+        statistics["mean_GFI"].append(np.mean(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["GFI"]))
+        statistics["median_GFI"].append(np.median(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_theses_de.loc[variances_theses_de["length_of_chunk"]==m]["std"]))
+        statistics["max_len"].append(np.max(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["length_of_chunk"]))
+
+        # compute values for English homeworks
+        statistics["chunk_size"].append(m)
+        statistics["type"].append("English homeworks")
+        statistics["number"].append(len(set(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["document"])))
+        statistics["mean_GFI"].append(np.mean(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["GFI"]))
+        statistics["median_GFI"].append(np.median(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_homeworks_en.loc[variances_homeworks_en["length_of_chunk"]==m]["std"]))
+        statistics["max_len"].append(np.max(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["length_of_chunk"]))
+
+        # compute values for German assignments
+        statistics["chunk_size"].append(m)
+        statistics["type"].append("German assignments")
+        statistics["number"].append(len(set(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["document"])))
+        statistics["mean_GFI"].append(np.mean(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["GFI"]))
+        statistics["median_GFI"].append(np.median(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["GFI"]))
+        statistics["mean_std"].append(np.mean(variances_homeworks_de.loc[variances_homeworks_de["length_of_chunk"]==m]["std"]))
+        statistics["max_len"].append(np.max(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["length_of_chunk"]))
+
+# convert the dictionary with the data to a dataframe
+df_statistics = pd.DataFrame(data=statistics)
+# write the collected data into a csv-file
+data_out = open("Results/comparisonTable.csv", "w")
+# convert the data to a csv and write it into the given file
+data_out.write(df_statistics.to_csv())
+
+df_10 = df_statistics.loc[df_statistics["chunk_size"]==10]
+# write the collected data into a csv-file
+data_out = open("Results/comparisonTable10.csv", "w")
+# convert the data to a csv and write it into the given file
+data_out.write(df_10.to_csv())
+
+df_30 = df_statistics.loc[df_statistics["chunk_size"]==30]
+# write the collected data into a csv-file
+data_out = open("Results/comparisonTable30.csv", "w")
+# convert the data to a csv and write it into the given file
+data_out.write(df_30.to_csv())
+
+df_100 = df_statistics.loc[df_statistics["chunk_size"]==100]
+# write the collected data into a csv-file
+data_out = open("Results/comparisonTable100.csv", "w")
+# convert the data to a csv and write it into the given file
+data_out.write(df_100.to_csv())
+
+data_out.close()
