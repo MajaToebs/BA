@@ -16,7 +16,7 @@ def plot_boxplot(df):
             plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
             plt.ylabel('GFI')
             plt.xticks(rotation=90)
-            plt.savefig('Plots/English/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
+            plt.savefig('Plots/English/homework/boxplot/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg', bbox_inches='tight')
 
 
 
@@ -40,8 +40,8 @@ def plot_barchart():
             plt.gcf().set_size_inches(7, 3.5)
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
-            plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
-            plt.savefig('Plots/English/homework/bar/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
+            #plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
+            plt.savefig('Plots/English/homework/bar/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg', bbox_inches='tight')
 
 # STRUCTURE CHART
 def plot_structure():
@@ -63,8 +63,8 @@ def plot_structure():
         plt.gcf().set_size_inches(14, 7)
         plt.ylabel('GFI')
         plt.xlabel("document's percentage of the chunk's end")
-        plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document', fontsize=14)
-        plt.savefig('Plots/English/homework/structure/all' + str(m) + '_long_indicesOverNumberOfChunk.svg')
+        #plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document', fontsize=14)
+        plt.savefig('Plots/English/homework/structure/all' + str(m) + '_long_indicesOverNumberOfChunk.svg', bbox_inches='tight')
 
 
 # SCATTER PLOT
@@ -93,8 +93,8 @@ def plot_scatterplot():
         plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', color='r')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
-        plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
-        plt.savefig('Plots/English/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
+        #plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
+        plt.savefig('Plots/English/homework/scatter/' + homework[-11:-4] + 'indicesOverChunkSize.svg', bbox_inches='tight')
 
 # DISTRIBUTION PLOT
 def plot_distribution():
@@ -103,12 +103,12 @@ def plot_distribution():
         df_of_len = df.loc[df['length_of_chunk']==m]
         for c, thesis in enumerate(all_homeworks[87:104]):
             this_doc_of_len = df_of_len.loc[df_of_len["document"]==thesis]
-            plt.hist(this_doc_of_len['GFI'], density = True, bins = np.arange(10, 20), color = colors_list[c+52], histtype="step")
+            plt.hist(this_doc_of_len['GFI'], density = True, bins = np.arange(10, 20), color = colors_list[c+313], alpha=0.3, histtype="bar")
         plt.gcf().set_size_inches(14, 7)
         plt.ylabel('probability')
         plt.xlabel('GFI')
-        plt.suptitle('distribution of GFI values of size ' + str(m) + ' of all homeworks', fontsize=14)
-        plt.savefig('Plots/English/homework/distribution/' + str(m) + '.svg')
+        #plt.suptitle('distribution of GFI values of size ' + str(m) + ' of all homeworks', fontsize=14)
+        plt.savefig('Plots/English/homework/distribution/' + str(m) + '.svg', bbox_inches='tight')
 
 
 # VARIANCES
@@ -135,7 +135,7 @@ def plot_variances():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
+    #plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
     plt.savefig('Plots/English/homework/variances.svg')
 
 
@@ -164,15 +164,15 @@ def plot_deviations():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean deviations of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/English/homework/deviations.svg')
+    #plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/English/homework/deviations.svg', bbox_inches='tight')
 
 
 
-df_0 = pd.read_csv("Results/English/results_0.csv", header=0, index_col=0)
-df_1 = pd.read_csv("Results/English/results_1.csv", header=0, index_col=0)
-df_2 = pd.read_csv("Results/English/results_2.csv", header=0, index_col=0)
-df_3 = pd.read_csv("Results/English/results_3.csv", header=0, index_col=0)
+df_0 = pd.read_csv("Results/English/results_0.csv", header=0, index_col=0) #essays
+df_1 = pd.read_csv("Results/English/results_1.csv", header=0, index_col=0) #aff-case
+df_2 = pd.read_csv("Results/English/results_2.csv", header=0, index_col=0) #osmosis
+df_3 = pd.read_csv("Results/English/results_3.csv", header=0, index_col=0) #mission-command
 
 # concatenate the results of the separate folders with documents
 df = pd.concat([df_0, df_1, df_2, df_3], ignore_index=True)
@@ -252,7 +252,7 @@ all_homeworks = ['aff-case/9536669.txt', 'aff-case/9514020.txt', 'aff-case/95341
                  'mission-command/9489819.txt', 'mission-command/9461911.txt', 'mission-command/9489857.txt',
                  'mission-command/9490214.txt', 'mission-command/9489842.txt']
 
-plot_boxplot(df)
+#plot_boxplot(df)
 
 
 #plot_barchart()

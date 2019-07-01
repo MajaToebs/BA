@@ -16,7 +16,7 @@ def plot_boxplot(type):
             plt.suptitle('GFI for chunks of size ' + str(m) + ' grouped by document', fontsize=14)
             plt.ylabel('GFI')
             plt.xticks(rotation=90)
-            plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg')
+            plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + 'longChunksBoxplottedAllHomeworks.svg', bbox_inches='tight')
 
 
 
@@ -43,8 +43,8 @@ def plot_barchart(type):
             plt.gcf().set_size_inches(7, 3.5)
             plt.ylabel('GFI')
             plt.xlabel('number of chunk (from beginning to end)')
-            plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
-            plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg')
+            #plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document ' + homework, fontsize=14)
+            plt.savefig('Plots/German/assignments/' + type + '/' + str(m) + "_long_" + homework[-6:] + 'indicesOverNumberOfChunk.svg', bbox_inches='tight')
 
 # STRUCTURE CHART
 def plot_structure(type):
@@ -74,8 +74,8 @@ def plot_structure(type):
         plt.gcf().set_size_inches(14, 7)
         plt.ylabel('GFI')
         plt.xlabel("document's percentage of the chunk's end")
-        plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document', fontsize=14)
-        plt.savefig('Plots/German/assignments/' + type + '/structure/all' + str(m) + '_long_indicesOverNumberOfChunk.svg')
+        #plt.suptitle('GFI for the chunks of size ' + str(m) + ' of document', fontsize=14)
+        plt.savefig('Plots/German/assignments/' + type + '/structure/all' + str(m) + '_long_indicesOverNumberOfChunk.svg', bbox_inches='tight')
 
 
 # SCATTER PLOT
@@ -109,8 +109,8 @@ def plot_scatterplot(type):
         plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', color='r')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
-        plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
-        plt.savefig('Plots/German/assignments/' + type + '/' + homework[-11:-4] + 'indicesOverChunkSize.svg')
+        #plt.suptitle('GFI values of the different chunk sizes of document ' + homework, fontsize=14)
+        plt.savefig('Plots/German/assignments/' + type + '/' + homework[-11:-4] + 'indicesOverChunkSize.svg', bbox_inches='tight')
 
 
 # DISTRIBUTION PLOT
@@ -125,12 +125,12 @@ def plot_distribution(type):
 
         for c, thesis in enumerate(all_docs[4:13]):
             this_doc_of_len = df_of_len.loc[df_of_len["document"]==thesis]
-            plt.hist(this_doc_of_len['GFI'], density = True, bins = np.arange(5,20), color = colors_list[c+72], histtype="step")
+            plt.hist(this_doc_of_len['GFI'], density = True, bins = np.arange(5,20), color = colors_list[c+313], alpha=0.3, histtype="bar")
         plt.gcf().set_size_inches(14, 7)
         plt.ylabel('probability')
         plt.xlabel('GFI')
-        plt.suptitle('distribution of GFI values of size ' + str(m) + ' of all homeworks', fontsize=14)
-        plt.savefig('Plots/German/assignments/' + type + '/distribution/' + str(m) + '.svg')
+        #plt.suptitle('distribution of GFI values of size ' + str(m) + ' of all homeworks', fontsize=14)
+        plt.savefig('Plots/German/assignments/' + type + '/distribution/' + str(m) + '.svg', bbox_inches='tight')
 
 
 
@@ -159,8 +159,8 @@ def plot_variances(type):
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean variance of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/German/assignments/' + type + '/variances.svg')
+    #plt.suptitle('Variances of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/German/assignments/' + type + '/variances.svg', bbox_inches='tight')
 
 
 
@@ -189,8 +189,8 @@ def plot_deviations(type):
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('mean deviations of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/German/assignments/' + type + '/deviations.svg')
+    #plt.suptitle('Deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/German/assignments/' + type + '/deviations.svg', bbox_inches='tight')
 
 
 

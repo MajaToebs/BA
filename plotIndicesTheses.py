@@ -11,9 +11,9 @@ def plot_scatterplot():
         this_doc = df.loc[df['document'] == thesis]
 
         # scatter the GFIs depending on the chunk size
-        plt.scatter(this_doc['length_of_chunk'], this_doc['fog'], label = 'my Fog', color = 'red')
+        #plt.scatter(this_doc['length_of_chunk'], this_doc['fog'], label = 'my Fog', color = 'red')
         plt.scatter(this_doc['length_of_chunk'], this_doc['GFI'], label = 'GFI', color = 'orange')
-        #plt.scatter(this_doc['length_of_chunk'], this_doc['ARI'], label = 'ARI', color = 'green')
+        plt.scatter(this_doc['length_of_chunk'], this_doc['ARI'], label = 'ARI', color = 'green')
         #plt.scatter(this_doc['length_of_chunk'], this_doc['SMOG'], label = 'SMOG', color = 'green')
         #plt.scatter(this_doc['length_of_chunk'], this_doc['CLI'], label = 'CLI', color = 'green')
         #plt.scatter(this_doc['length_of_chunk'], this_doc['FKGL'], label = 'FKGL', color = 'green')
@@ -30,19 +30,18 @@ def plot_scatterplot():
         mean_other = {'len': [],
                      'mean': []}
         for l in sorted(set(this_doc['length_of_chunk'])):
-            values = this_doc.loc[this_doc['length_of_chunk'] == l]['fog']
+            values = this_doc.loc[this_doc['length_of_chunk'] == l]['ARI']
             mean_other['len'].append(l)
             mean_other['mean'].append(np.mean(values))
 
         # insert the means into the plot
         plt.plot(mean_GFIs['len'], mean_GFIs['mean'], 'k-', label = 'mean GFIs of this chunk size', color='orange')
         # insert the means into the plot
-        plt.plot(mean_other['len'], mean_other['mean'], 'k-', label = 'mean Fogs of this chunk size', color='red')
+        plt.plot(mean_other['len'], mean_other['mean'], 'k-', label = 'mean ARIs of this chunk size', color='green')
         plt.ylabel('grade level')
         plt.xlabel('length of chunk in sentences')
         plt.legend()
-        plt.suptitle('Comparison of two readability indices for document ' + thesis, fontsize=14)
-        plt.savefig('Plots/indices/thesis/scatter/' + thesis + 'indicesOverChunkSize.svg')
+        plt.savefig('Plots/English/indices/thesis/scatter/ARI/' + thesis + 'indicesOverChunkSize.svg', bbox_inches = 'tight')
 
 
 

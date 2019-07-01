@@ -38,8 +38,8 @@ def plot_scatterplot():
         plt.plot(mean_GFIs_shortened['len'], mean_GFIs_shortened['mean'], 'k-', color='red')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
-        plt.suptitle('Comparison of GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
-        plt.savefig('Plots/English/outliers/' + thesis + 'indicesOverChunkSizeShortenedSentences.svg')
+        #plt.suptitle('Comparison of GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
+        plt.savefig('Plots/English/outliers/' + thesis + 'indicesOverChunkSizeShortenedSentences.svg', bbox_inches='tight')
 
 
 
@@ -88,9 +88,9 @@ def plot_deviations():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('standard deviation of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.suptitle('Comparison of how the definition of the end of a sentence influences\n'
-                 'the standard deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/English/outliers/deviationsOnChunkSizeShortenedSentences.svg')
+    #plt.suptitle('Comparison of how the definition of the end of a sentence influences\n'
+    #             'the standard deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/English/outliers/deviationsOnChunkSizeShortenedSentences.svg', bbox_inches='tight')
 
 
 

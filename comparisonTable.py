@@ -54,54 +54,54 @@ statistics = {
     "number" : [],
     "chunk_size" : [],
     "mean_GFI" : [],
-    "median_GFI" : [],
+    "std_GFI" : [],
     "mean_std" : [],
     "std_std" : [],
     "max_len" : []
 }
 
 for m in [0, 100, 30, 10]:
-    # zero means that all values are averaged independent of their chunk size
     if m == 0:
+        normal = [1000, 750, 500, 450, 400, 350, 300, 250, 200, 150, 100, 90, 80, 75, 70, 60, 50, 45, 40, 35, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10]
         # compute values for English theses
         statistics["chunk_size"].append(0)
         statistics["type"].append("English theses")
         statistics["number"].append(len(set(df_theses_en["document"])))
-        statistics["mean_GFI"].append(np.around(np.mean(df_theses_en["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_theses_en["GFI"]), decimals = 2))
-        statistics["mean_std"].append(np.around(np.mean(variances_theses_en["std"]), decimals = 2))
-        statistics["std_std"].append(np.around(np.std(variances_theses_en["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_theses_en["length_of_chunk"]))
+        statistics["mean_GFI"].append(np.around(np.mean(df_theses_en.loc[~df_theses_en["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_theses_en.loc[~df_theses_en["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["mean_std"].append(np.around(np.mean(variances_theses_en.loc[~variances_theses_en["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["std_std"].append(np.around(np.std(variances_theses_en.loc[~variances_theses_en["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["max_len"].append(np.max(df_theses_en.loc[~df_theses_en["length_of_chunk"].isin(normal)]["length_of_chunk"]))
 
         # compute values for German theses
         statistics["chunk_size"].append(0)
         statistics["type"].append("German theses")
         statistics["number"].append(len(set(df_theses_de["document"])))
-        statistics["mean_GFI"].append(np.around(np.mean(df_theses_de["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_theses_de["GFI"]), decimals = 2))
-        statistics["mean_std"].append(np.around(np.mean(variances_theses_de["std"]), decimals = 2))
-        statistics["std_std"].append(np.around(np.std(variances_theses_de["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_theses_de["length_of_chunk"]))
+        statistics["mean_GFI"].append(np.around(np.mean(df_theses_de.loc[~df_theses_de["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_theses_de.loc[~df_theses_de["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["mean_std"].append(np.around(np.mean(variances_theses_de.loc[~variances_theses_de["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["std_std"].append(np.around(np.std(variances_theses_de.loc[~variances_theses_de["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["max_len"].append(np.max(df_theses_de.loc[~df_theses_de["length_of_chunk"].isin(normal)]["length_of_chunk"]))
 
         # compute values for English homeworks
         statistics["chunk_size"].append(0)
         statistics["type"].append("English homeworks")
         statistics["number"].append(len(set(df_homeworks_en["document"])))
-        statistics["mean_GFI"].append(np.around(np.mean(df_homeworks_en["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_homeworks_en["GFI"]), decimals = 2))
-        statistics["mean_std"].append(np.around(np.mean(variances_homeworks_en["std"]), decimals = 2))
-        statistics["std_std"].append(np.around(np.std(variances_homeworks_en["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_homeworks_en["length_of_chunk"]))
+        statistics["mean_GFI"].append(np.around(np.mean(df_homeworks_en.loc[~df_homeworks_en["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_homeworks_en.loc[~df_homeworks_en["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["mean_std"].append(np.around(np.mean(variances_homeworks_en.loc[~variances_homeworks_en["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["std_std"].append(np.around(np.std(variances_homeworks_en.loc[~variances_homeworks_en["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["max_len"].append(np.max(df_homeworks_en.loc[~df_homeworks_en["length_of_chunk"].isin(normal)]["length_of_chunk"]))
 
         # compute values for German assignments
         statistics["chunk_size"].append(0)
         statistics["type"].append("German assignments")
         statistics["number"].append(len(set(df_homeworks_de["document"])))
-        statistics["mean_GFI"].append(np.around(np.mean(df_homeworks_de["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_homeworks_de["GFI"]), decimals = 2))
-        statistics["mean_std"].append(np.around(np.mean(variances_homeworks_de["std"]), decimals = 2))
-        statistics["std_std"].append(np.around(np.std(variances_homeworks_de["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_homeworks_de["length_of_chunk"]))
+        statistics["mean_GFI"].append(np.around(np.mean(df_homeworks_de.loc[~df_homeworks_de["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_homeworks_de.loc[~df_homeworks_de["length_of_chunk"].isin(normal)]["GFI"]), decimals = 2))
+        statistics["mean_std"].append(np.around(np.mean(variances_homeworks_de.loc[~variances_homeworks_de["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["std_std"].append(np.around(np.std(variances_homeworks_de.loc[~variances_homeworks_de["length_of_chunk"].isin(normal)]["std"]), decimals = 2))
+        statistics["max_len"].append(np.max(df_homeworks_de.loc[~df_homeworks_de["length_of_chunk"].isin(normal)]["length_of_chunk"]))
 
     # else m is the chunk size whose values are averaged
     else:
@@ -110,40 +110,40 @@ for m in [0, 100, 30, 10]:
         statistics["type"].append("English theses")
         statistics["number"].append(len(set(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["document"])))
         statistics["mean_GFI"].append(np.around(np.mean(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["GFI"]), decimals = 2))
         statistics["mean_std"].append(np.around(np.mean(variances_theses_en.loc[variances_theses_en["length_of_chunk"]==m]["std"]), decimals = 2))
         statistics["std_std"].append(np.around(np.std(variances_theses_en.loc[variances_theses_en["length_of_chunk"]==m]["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_theses_en.loc[df_theses_en["length_of_chunk"]==m]["length_of_chunk"]))
+        statistics["max_len"].append(0)
 
         # compute values for German theses
         statistics["chunk_size"].append(m)
         statistics["type"].append("German theses")
         statistics["number"].append(len(set(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["document"])))
         statistics["mean_GFI"].append(np.around(np.mean(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["GFI"]), decimals = 2))
         statistics["mean_std"].append(np.around(np.mean(variances_theses_de.loc[variances_theses_de["length_of_chunk"]==m]["std"]), decimals = 2))
         statistics["std_std"].append(np.around(np.std(variances_theses_de.loc[variances_theses_de["length_of_chunk"]==m]["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_theses_de.loc[df_theses_de["length_of_chunk"]==m]["length_of_chunk"]))
+        statistics["max_len"].append(0)
 
         # compute values for English homeworks
         statistics["chunk_size"].append(m)
         statistics["type"].append("English homeworks")
         statistics["number"].append(len(set(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["document"])))
         statistics["mean_GFI"].append(np.around(np.mean(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["GFI"]), decimals = 2))
         statistics["mean_std"].append(np.around(np.mean(variances_homeworks_en.loc[variances_homeworks_en["length_of_chunk"]==m]["std"]), decimals = 2))
         statistics["std_std"].append(np.around(np.std(variances_homeworks_en.loc[variances_homeworks_en["length_of_chunk"]==m]["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_homeworks_en.loc[df_homeworks_en["length_of_chunk"]==m]["length_of_chunk"]))
+        statistics["max_len"].append(0)
 
         # compute values for German assignments
         statistics["chunk_size"].append(m)
         statistics["type"].append("German assignments")
         statistics["number"].append(len(set(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["document"])))
         statistics["mean_GFI"].append(np.around(np.mean(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["GFI"]), decimals = 2))
-        statistics["median_GFI"].append(np.around(np.median(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["GFI"]), decimals = 2))
+        statistics["std_GFI"].append(np.around(np.std(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["GFI"]), decimals = 2))
         statistics["mean_std"].append(np.around(np.mean(variances_homeworks_de.loc[variances_homeworks_de["length_of_chunk"]==m]["std"]), decimals = 2))
         statistics["std_std"].append(np.around(np.std(variances_homeworks_de.loc[variances_homeworks_de["length_of_chunk"]==m]["std"]), decimals = 2))
-        statistics["max_len"].append(np.max(df_homeworks_de.loc[df_homeworks_de["length_of_chunk"]==m]["length_of_chunk"]))
+        statistics["max_len"].append(0)
 
 # convert the dictionary with the data to a dataframe
 df_statistics = pd.DataFrame(data=statistics)
@@ -156,24 +156,24 @@ df_10 = df_statistics.loc[df_statistics["chunk_size"]==10]
 # write the collected data into a csv-file
 data_out = open("Results/comparisonTable10.csv", "w")
 # convert the data to a csv and write it into the given file
-data_out.write(df_10.to_csv(index = False, columns = ["type", "number", "mean_GFI", "median_GFI", "mean_std", "std_std"]))
+data_out.write(df_10.to_csv(index = False, columns = ["type", "number", "mean_GFI", "std_GFI", "mean_std", "std_std"]))
 
 df_30 = df_statistics.loc[df_statistics["chunk_size"]==30]
 # write the collected data into a csv-file
 data_out = open("Results/comparisonTable30.csv", "w")
 # convert the data to a csv and write it into the given file
-data_out.write(df_30.to_csv(index = False, columns = ["type", "number", "mean_GFI", "median_GFI", "mean_std", "std_std"]))
+data_out.write(df_30.to_csv(index = False, columns = ["type", "number", "mean_GFI", "std_GFI", "mean_std", "std_std"]))
 
 df_100 = df_statistics.loc[df_statistics["chunk_size"]==100]
 # write the collected data into a csv-file
 data_out = open("Results/comparisonTable100.csv", "w")
 # convert the data to a csv and write it into the given file
-data_out.write(df_100.to_csv(index = False, columns = ["type", "number", "mean_GFI", "median_GFI", "mean_std", "std_std"]))
+data_out.write(df_100.to_csv(index = False, columns = ["type", "number", "mean_GFI", "std_GFI", "mean_std", "std_std"]))
 
 df_all = df_statistics.loc[df_statistics["chunk_size"]==0]
 # write the collected data into a csv-file
 data_out = open("Results/comparisonTable0.csv", "w")
 # convert the data to a csv and write it into the given file
-data_out.write(df_all.to_csv(index = False, columns = ["type", "number", "mean_GFI", "median_GFI", "mean_std", "std_std"]))
+data_out.write(df_all.to_csv(index = False, columns = ["type", "number", "mean_GFI", "std_GFI"]))
 
 data_out.close()

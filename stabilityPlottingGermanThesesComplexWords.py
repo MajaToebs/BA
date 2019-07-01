@@ -49,8 +49,8 @@ def plot_scatterplot():
         plt.plot(mean_GFIs_5['len'], mean_GFIs_5['mean'], 'k-', color='green')
         plt.ylabel('GFI')
         plt.xlabel('length of chunk in sentences')
-        plt.suptitle('Comparison of GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
-        plt.savefig('Plots/German/complex/' + thesis + 'indicesOverChunkSizeShortenedSentences.svg')
+        #plt.suptitle('Comparison of GFI values of the different chunk sizes of document ' + thesis, fontsize=14)
+        plt.savefig('Plots/German/complex/' + thesis + 'indicesOverChunkSizeShortenedSentences.svg', bbox_inches='tight')
 
 
 
@@ -116,9 +116,9 @@ def plot_deviations():
     plt.gcf().set_size_inches(14, 7)
     plt.ylabel('standard deviation of the GFI over all documents')
     plt.xlabel('length of chunk in sentences')
-    plt.suptitle('Comparison of how the definition of complex words influences\n'
-                 'the standard deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
-    plt.savefig('Plots/German/complex/deviationsOnChunkSizeShortenedSentences.svg')
+    #plt.suptitle('Comparison of how the definition of complex words influences\n'
+    #             'the standard deviations of GFI values of the different chunk sizes over all documents', fontsize=14)
+    plt.savefig('Plots/German/complex/deviationsOnChunkSizeShortenedSentences.svg', bbox_inches='tight')
 
 
 
@@ -137,7 +137,7 @@ all_theses = ['de122603393.txt', 'de123666862.txt', 'de116971348.txt', 'de113804
               'de118627493.txt', 'de122449695.txt', 'de123748878.txt', 'de118577040.txt', 'de123255864.txt']
 
 
-#plot_scatterplot()
+plot_scatterplot()
 plot_deviations()
 
 plt.close('all')
